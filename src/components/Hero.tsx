@@ -44,7 +44,7 @@ export default function Hero() {
       </div>
 
       {/* 2. Floating "10K+ Happy Customers" Card (High up beside Big Ben) */}
-      <div className="absolute top-[18%] sm:top-[20%] lg:top-[38%] right-[3%] sm:right-[5%] lg:right-[5%] z-20 bg-white rounded-[14px] sm:rounded-[16px] p-3 sm:p-3.5 shadow-2xl border border-white/80 pointer-events-auto transition-transform hover:scale-105 duration-200">
+      <div className="absolute top-[18%] sm:top-[20%] lg:top-[38%] right-[3%] sm:right-[5%] lg:right-[5%] z-20 bg-white rounded-[10px] p-3 sm:p-3.5 shadow-2xl border border-white/80 pointer-events-auto transition-transform hover:scale-105 duration-200">
         <div className="space-y-0.5">
           <div className="text-xl sm:text-2xl font-black text-[#3563E9] tracking-tight leading-none">
             10K+
@@ -128,7 +128,7 @@ export default function Hero() {
           <div className="flex items-center gap-6 pt-1">
             <Link
               href="#rental-details"
-              className="px-6 sm:px-7 py-3 sm:py-3.5 bg-white text-[#3563E9] font-bold text-sm sm:text-base rounded-[6px] shadow-lg hover:bg-white/95 transition-all hover:scale-105 inline-flex items-center gap-2 active:scale-95"
+              className="px-6 sm:px-7 py-3 sm:py-3.5 bg-white text-[#3563E9] font-bold text-sm sm:text-base rounded-[5px] shadow-lg hover:bg-white/95 transition-all hover:scale-105 inline-flex items-center gap-2 active:scale-95"
             >
               <span>Booking Now</span>
               <ArrowRight className="w-4 h-4" />

@@ -35,10 +35,10 @@ export default function WhyChooseUs() {
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-          {/* Left Graphic Showcase - Full Column Width */}
+          {/* Left Graphic Showcase - Exact Design with rounded-[10px] */}
           <div className="lg:col-span-6 w-full">
-            <div className="w-full h-[360px] sm:h-[420px] md:h-[460px] lg:h-[490px] rounded-[18px] sm:rounded-[22px] relative overflow-hidden shadow-[0px_15px_40px_rgba(0,0,0,0.12)] border border-slate-100 flex flex-col justify-end p-7 sm:p-9 group">
-              {/* Background Image - Full Width & Height */}
+            <div className="w-full h-[360px] sm:h-[420px] md:h-[460px] lg:h-[490px] rounded-[10px] relative overflow-hidden shadow-[0px_10px_30px_rgba(0,0,0,0.08)] border border-slate-100 flex flex-col justify-end p-7 sm:p-9 group">
+              {/* Background Image */}
               <Image
                 src="/why-choose-us.jpg"
                 alt="SwiftRide Verified Fleet - Safe Cars, Smoother Journeys"
@@ -53,9 +53,9 @@ export default function WhyChooseUs() {
 
               {/* Bottom Left Card Content */}
               <div className="relative z-10 space-y-2.5">
-                {/* Glowing Blue Squircle Badge */}
-                <div className="w-12 h-12 rounded-[14px] bg-[#3563E9] flex items-center justify-center text-white shadow-[0_4px_20px_rgba(53,99,233,0.5)] border border-blue-400/30">
-                  <Shield className="w-6 h-6 fill-white text-white" />
+                {/* Blue Badge with rounded-[8px] */}
+                <div className="w-11 h-11 rounded-[8px] bg-[#3563E9] flex items-center justify-center text-white shadow-md border border-blue-400/30">
+                  <Shield className="w-5 h-5 fill-white text-white" />
                 </div>
 
                 {/* Card Title & Subtitle */}
@@ -75,7 +75,7 @@ export default function WhyChooseUs() {
           <div className="lg:col-span-6 space-y-8">
             {features.map((feature, idx) => (
               <div key={idx} className="flex items-start gap-5 group">
-                <div className="w-[52px] h-[52px] bg-[#3563E9]/10 group-hover:bg-[#3563E9] group-hover:text-white text-[#3563E9] rounded-[12px] flex items-center justify-center shrink-0 shadow-xs transition-colors duration-200">
+                <div className="w-[51px] h-[51px] bg-[#3563E9]/10 group-hover:bg-[#3563E9] group-hover:text-white text-[#3563E9] rounded-[8px] flex items-center justify-center shrink-0 shadow-xs transition-colors duration-200">
                   {feature.icon}
                 </div>
                 <div>

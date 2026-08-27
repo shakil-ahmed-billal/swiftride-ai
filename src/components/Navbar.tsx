@@ -55,15 +55,15 @@ export default function Navbar() {
         {/* Desktop Auth Buttons */}
         <div className="hidden lg:flex items-center gap-6">
           <Link
-            href="/admin/dashboard"
+            href="/register"
             className="text-white font-medium text-base tracking-tight underline underline-offset-4 hover:text-white/80 transition-colors"
           >
             Register
           </Link>
 
           <Link
-            href="/admin/dashboard"
-            className="px-6 py-2.5 bg-white text-[#3563E9] font-bold text-sm rounded-[6px] tracking-tight hover:bg-white/95 transition-all shadow-md active:scale-95"
+            href="/login"
+            className="px-6 py-2.5 bg-white text-[#3563E9] font-bold text-sm rounded-[5px] tracking-tight hover:bg-white/95 transition-all shadow-md active:scale-95"
           >
             Log In
           </Link>

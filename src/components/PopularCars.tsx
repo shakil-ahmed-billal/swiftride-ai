@@ -105,7 +105,7 @@ export default function PopularCars() {
   return (
     <section id="rental-details" className="w-full bg-[#F6F7F9] py-20 px-6 md:px-16">
       <div className="max-w-[1440px] mx-auto">
-        {/* Section Heading */}
+        {/* Consistent Section Heading */}
         <div className="text-center mb-12">
           <h2 className="text-[#0B132A] font-bold text-2xl sm:text-3xl md:text-4xl tracking-tight leading-tight mb-3 sm:mb-4">
             Most popular car rental deals
@@ -134,19 +134,19 @@ export default function PopularCars() {
           </div>
         </div>
 
-        {/* Cars Grid - 3 cars per row with BIG car images */}
+        {/* Cars Grid - 3 cars per row with wireframe rounded-[10px] */}
         {isLoading ? (
           <div className="py-24 text-center text-slate-500 font-medium">
             Loading live fleet data from Supabase...
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCars.map((car) => {
               const isFav = favorites.includes(car.id);
               return (
                 <div
                   key={car.id}
-                  className="bg-white rounded-[16px] p-6 sm:p-7 flex flex-col justify-between min-h-[460px] sm:min-h-[480px] border border-slate-200/80 shadow-[0px_4px_25px_0px_rgba(0,0,0,0.04)] hover:shadow-xl transition-all duration-300 relative group"
+                  className="bg-white rounded-[10px] p-6 sm:p-7 flex flex-col justify-between min-h-[460px] sm:min-h-[480px] border border-slate-200/80 shadow-[0px_4px_25px_0px_rgba(0,0,0,0.03)] hover:shadow-lg transition-all duration-300 relative group"
                 >
                   {/* Top: Title & Favorite Heart */}
                   <div>
@@ -161,23 +161,23 @@ export default function PopularCars() {
                       </div>
                       <button
                         onClick={() => toggleFavorite(car.id)}
-                        className="p-2 text-slate-400 hover:text-red-500 rounded-full hover:bg-slate-50 transition-colors cursor-pointer"
+                        className="p-1.5 text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
                         aria-label="Add to favorites"
                       >
                         <Heart
-                          className={`w-6 h-6 ${isFav ? "fill-red-500 text-red-500" : "stroke-current"}`}
+                          className={`w-5 h-5 ${isFav ? "fill-red-500 text-red-500" : "stroke-current"}`}
                         />
                       </button>
                     </div>
 
-                    {/* Middle: Prominent BIG Car Image from Supabase */}
+                    {/* Middle: Prominent BIG Car Image */}
                     <div className="w-full h-52 sm:h-60 my-2 flex items-center justify-center relative">
                       <Image
                         src={car.image}
                         alt={car.name}
                         width={460}
                         height={260}
-                        className="object-contain max-h-48 sm:max-h-56 w-full drop-shadow-sm group-hover:scale-110 transition-transform duration-300"
+                        className="object-contain max-h-48 sm:max-h-56 w-full drop-shadow-xs group-hover:scale-105 transition-transform duration-300"
                         unoptimized={car.image.startsWith("http")}
                       />
                     </div>
@@ -212,7 +212,7 @@ export default function PopularCars() {
                       </div>
                       <button
                         onClick={() => setSelectedCar(car)}
-                        className="w-[125px] sm:w-[135px] h-11 sm:h-12 bg-[#3563E9] hover:bg-[#254EDB] text-white font-bold text-sm rounded-[8px] flex items-center justify-center transition-all shadow-sm cursor-pointer active:scale-95"
+                        className="w-[120px] sm:w-[130px] h-10 sm:h-11 bg-[#3563E9] hover:bg-[#254EDB] text-white font-semibold text-sm rounded-[5px] flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95"
                       >
                         Rent Now
                       </button>
@@ -224,12 +224,12 @@ export default function PopularCars() {
           </div>
         )}
 
-        {/* Bottom Count */}
+        {/* Bottom Button */}
         <div className="flex items-center justify-between mt-14 pt-4">
           <div className="mx-auto flex items-center gap-6">
             <button
               type="button"
-              className="px-8 py-3.5 bg-[#3563E9] text-white font-bold text-sm rounded-[8px] shadow-md hover:bg-[#254EDB] transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              className="px-8 py-3 bg-[#3563E9] text-white font-semibold text-sm rounded-[5px] shadow-sm hover:bg-[#254EDB] transition-all hover:scale-105 active:scale-95 cursor-pointer"
             >
               Show more car
             </button>
@@ -240,7 +240,7 @@ export default function PopularCars() {
       {/* Live Booking Modal Popup */}
       {selectedCar && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-[16px] max-w-[480px] w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-[10px] max-w-[480px] w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
             <button
               onClick={() => setSelectedCar(null)}
               className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition-colors"
@@ -250,10 +250,10 @@ export default function PopularCars() {
 
             {bookingSuccess ? (
               <div className="py-8 text-center space-y-3">
-                <div className="w-14 h-14 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto">
-                  <Check className="w-8 h-8" />
+                <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto">
+                  <Check className="w-6 h-6" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900">Booking Confirmed!</h3>
+                <h3 className="text-xl font-bold text-slate-900">Booking Confirmed!</h3>
                 <p className="text-slate-600 text-sm">
                   Your reservation for <span className="font-semibold text-[#3563E9]">{selectedCar.name}</span> has been saved in the Supabase backend.
                 </p>
@@ -267,7 +267,7 @@ export default function PopularCars() {
                   </p>
                 </div>
 
-                <div className="w-full h-36 bg-slate-50 rounded-[10px] flex items-center justify-center p-2 relative overflow-hidden">
+                <div className="w-full h-36 bg-slate-50 rounded-[8px] flex items-center justify-center p-2 relative overflow-hidden">
                   <Image
                     src={selectedCar.image}
                     alt={selectedCar.name}
@@ -287,7 +287,7 @@ export default function PopularCars() {
                       placeholder="e.g. John Doe"
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
-                      className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-[6px] focus:outline-none focus:border-[#3563E9]"
+                      className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-[5px] focus:outline-none focus:border-[#3563E9]"
                     />
                   </div>
 
@@ -299,7 +299,7 @@ export default function PopularCars() {
                       placeholder="e.g. john@example.com"
                       value={customerEmail}
                       onChange={(e) => setCustomerEmail(e.target.value)}
-                      className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-[6px] focus:outline-none focus:border-[#3563E9]"
+                      className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-[5px] focus:outline-none focus:border-[#3563E9]"
                     />
                   </div>
 
@@ -311,11 +311,11 @@ export default function PopularCars() {
                       max={30}
                       value={rentalDays}
                       onChange={(e) => setRentalDays(Number(e.target.value))}
-                      className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-[6px] focus:outline-none focus:border-[#3563E9]"
+                      className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-[5px] focus:outline-none focus:border-[#3563E9]"
                     />
                   </div>
 
-                  <div className="p-3 bg-blue-50/60 rounded-[8px] flex items-center justify-between text-sm">
+                  <div className="p-3 bg-blue-50/60 rounded-[6px] flex items-center justify-between text-sm">
                     <span className="font-semibold text-slate-700">Estimated Total:</span>
                     <span className="font-bold text-lg text-[#3563E9]">
                       ${(selectedCar.price_per_day * rentalDays).toFixed(2)}
@@ -326,7 +326,7 @@ export default function PopularCars() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3 bg-[#3563E9] hover:bg-[#254EDB] text-white font-bold text-sm rounded-[6px] transition-all shadow-md active:scale-98 disabled:opacity-50 cursor-pointer"
+                  className="w-full py-2.5 bg-[#3563E9] hover:bg-[#254EDB] text-white font-semibold text-sm rounded-[5px] transition-all shadow-sm active:scale-98 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? "Processing Reservation..." : "Confirm & Book Now"}
                 </button>

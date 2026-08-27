@@ -63,7 +63,7 @@ export default function Testimonials() {
           {reviews.map((item, idx) => (
             <div
               key={item.id}
-              className={`bg-white rounded-[14px] sm:rounded-[16px] p-6 sm:p-8 flex flex-col justify-between min-h-[240px] border transition-all duration-300 ${
+              className={`bg-white rounded-[10px] p-6 sm:p-8 flex flex-col justify-between min-h-[240px] border transition-all duration-300 ${
                 currentIndex === idx
                   ? "border-[#3563E9] shadow-[0px_10px_30px_rgba(53,99,233,0.12)] scale-[1.02]"
                   : "border-slate-200/80 shadow-[0px_4px_20px_rgba(0,0,0,0.03)] hover:border-slate-300"
