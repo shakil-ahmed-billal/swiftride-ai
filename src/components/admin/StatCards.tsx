@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Calendar,
@@ -11,13 +11,40 @@ import {
   PackageCheck,
   SlidersHorizontal,
 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function StatCards() {
   const [dateRange] = useState("01 Jan 2024 - 07 Jan 2024");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [weeklyEarning, setWeeklyEarning] = useState("$95,000.45");
+  const [totalSales, setTotalSales] = useState("10,000+");
+  const [purchasedGoods, setPurchasedGoods] = useState("800+");
 
-  const handleRefresh = () => {
+  const loadMetrics = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("dashboard_metrics")
+        .select("*");
+
+      if (data && !error) {
+        data.forEach((metric) => {
+          if (metric.id === "weekly_earning") setWeeklyEarning(metric.metric_value);
+          if (metric.id === "total_sales") setTotalSales(metric.metric_value);
+          if (metric.id === "purchased_goods") setPurchasedGoods(metric.metric_value);
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load metrics:", err);
+    }
+  };
+
+  useEffect(() => {
+    loadMetrics();
+  }, []);
+
+  const handleRefresh = async () => {
     setIsRefreshing(true);
+    await loadMetrics();
     setTimeout(() => setIsRefreshing(false), 500);
   };
 
@@ -55,7 +82,7 @@ export default function StatCards() {
 
           <button
             type="button"
-            className="p-1.5 bg-white border border-slate-200 rounded-[6px] text-slate-600 hover:text-[#3563E9] transition-colors shadow-2xs"
+            className="p-1.5 bg-white border border-slate-200 rounded-[6px] text-slate-600 hover:text-[#3563E9] transition-colors shadow-2xs cursor-pointer"
             title="Filter Analytics"
           >
             <SlidersHorizontal className="w-4 h-4" />
@@ -64,7 +91,7 @@ export default function StatCards() {
           <button
             type="button"
             onClick={handleRefresh}
-            className={`p-1.5 bg-white border border-slate-200 rounded-[6px] text-slate-600 hover:text-[#3563E9] transition-colors shadow-2xs ${
+            className={`p-1.5 bg-white border border-slate-200 rounded-[6px] text-slate-600 hover:text-[#3563E9] transition-colors shadow-2xs cursor-pointer ${
               isRefreshing ? "animate-spin text-[#3563E9]" : ""
             }`}
             title="Refresh Data"
@@ -84,7 +111,7 @@ export default function StatCards() {
             </span>
             <div className="space-y-0.5">
               <div className="text-xl sm:text-2xl font-extrabold text-[#0B132A] tracking-tight">
-                $95,000.45
+                {weeklyEarning}
               </div>
               <div className="flex items-center gap-1.5 text-xs text-slate-500">
                 <span className="inline-flex items-center gap-0.5 font-bold text-emerald-600">
@@ -118,7 +145,7 @@ export default function StatCards() {
 
           <div className="space-y-0.5 mt-3">
             <div className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-              10,000+
+              {totalSales}
             </div>
             <div className="text-xs font-medium text-amber-100">
               No of Total Sales
@@ -137,7 +164,7 @@ export default function StatCards() {
 
           <div className="space-y-0.5 mt-3">
             <div className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-              800+
+              {purchasedGoods}
             </div>
             <div className="text-xs font-medium text-slate-300">
               No of Purchased Goods

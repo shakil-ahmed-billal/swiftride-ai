@@ -19,3 +19,7 @@ body {
 .font-rubik {
   font-family: var(--font-rubik), sans-serif;
 }
+
+.font-caveat {
+  font-family: var(--font-caveat), cursive;
+}

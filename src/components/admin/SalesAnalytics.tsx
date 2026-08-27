@@ -1,30 +1,63 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar, TrendingUp } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 interface DataPoint {
   month: string;
   value: number;
-  amount: string;
+  revenue_formatted: string;
 }
-
-const data2024: DataPoint[] = [
-  { month: "Jan", value: 38, amount: "$38,400" },
-  { month: "Feb", value: 24, amount: "$24,100" },
-  { month: "Mar", value: 45, amount: "$45,200" },
-  { month: "Apr", value: 30, amount: "$30,900" },
-  { month: "May", value: 55, amount: "$55,000" },
-  { month: "Jun", value: 42, amount: "$42,800" },
-  { month: "July", value: 48, amount: "$48,600" },
-  { month: "Aug", value: 35, amount: "$35,300" },
-  { month: "Sep", value: 58, amount: "$58,900" },
-];
 
 export default function SalesAnalytics() {
   const [selectedYear, setSelectedYear] = useState("2024");
+  const [dataPoints, setDataPoints] = useState<DataPoint[]>([]);
   const [hoveredPoint, setHoveredPoint] = useState<DataPoint | null>(null);
   const [hoverPos, setHoverPos] = useState<{ x: number; y: number } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadMonthlyData() {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("monthly_analytics")
+          .select("month, value, revenue_formatted")
+          .eq("year", selectedYear)
+          .order("month_index", { ascending: true });
+
+        if (data && !error && data.length > 0) {
+          setDataPoints(
+            data.map((d) => ({
+              month: d.month,
+              value: parseFloat(d.value),
+              revenue_formatted: d.revenue_formatted,
+            }))
+          );
+        } else {
+          // Fallback if year has no entries
+          setDataPoints([
+            { month: "Jan", value: 38, revenue_formatted: "$38,400" },
+            { month: "Feb", value: 24, revenue_formatted: "$24,100" },
+            { month: "Mar", value: 45, revenue_formatted: "$45,200" },
+            { month: "Apr", value: 30, revenue_formatted: "$30,900" },
+            { month: "May", value: 55, revenue_formatted: "$55,000" },
+            { month: "Jun", value: 42, revenue_formatted: "$42,800" },
+            { month: "July", value: 48, revenue_formatted: "$48,600" },
+            { month: "Aug", value: 35, revenue_formatted: "$35,300" },
+            { month: "Sep", value: 58, revenue_formatted: "$58,900" },
+          ]);
+        }
+      } catch (err) {
+        console.error("Failed to load monthly analytics:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadMonthlyData();
+  }, [selectedYear]);
 
   const width = 640;
   const height = 190;
@@ -39,8 +72,8 @@ export default function SalesAnalytics() {
   const maxValue = 60;
   const minValue = 0;
 
-  const points = data2024.map((d, index) => {
-    const x = paddingLeft + (index / (data2024.length - 1)) * chartWidth;
+  const points = dataPoints.map((d, index) => {
+    const x = paddingLeft + (index / Math.max(dataPoints.length - 1, 1)) * chartWidth;
     const y =
       paddingTop +
       chartHeight -
@@ -58,9 +91,12 @@ export default function SalesAnalytics() {
     return `${acc} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${point.x},${point.y}`;
   }, "");
 
-  const areaPath = `${linePath} L ${points[points.length - 1].x},${
-    paddingTop + chartHeight
-  } L ${points[0].x},${paddingTop + chartHeight} Z`;
+  const areaPath =
+    points.length > 0
+      ? `${linePath} L ${points[points.length - 1].x},${
+          paddingTop + chartHeight
+        } L ${points[0].x},${paddingTop + chartHeight} Z`
+      : "";
 
   const yTicks = [60, 50, 40, 30, 20, 10];
 
@@ -99,7 +135,9 @@ export default function SalesAnalytics() {
             className="absolute z-20 pointer-events-none -translate-x-1/2 -translate-y-full mb-2 bg-[#0B132A] text-white px-2.5 py-1 rounded-[6px] text-xs shadow-md space-y-0.5"
             style={{ left: `${hoverPos.x}px`, top: `${hoverPos.y}px` }}
           >
-            <div className="font-bold text-[#FA8231]">{hoveredPoint.amount}</div>
+            <div className="font-bold text-[#FA8231]">
+              {hoveredPoint.revenue_formatted}
+            </div>
             <div className="text-[10px] text-slate-300">
               {hoveredPoint.month} {selectedYear}
             </div>
@@ -147,16 +185,18 @@ export default function SalesAnalytics() {
           })}
 
           {/* Area Fill */}
-          <path d={areaPath} fill="url(#orangeGradient)" />
+          {areaPath && <path d={areaPath} fill="url(#orangeGradient)" />}
 
           {/* Line Path */}
-          <path
-            d={linePath}
-            fill="none"
-            stroke="#FA8231"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          />
+          {linePath && (
+            <path
+              d={linePath}
+              fill="none"
+              stroke="#FA8231"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+          )}
 
           {/* Points */}
           {points.map((p) => {

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronDown, TrendingUp } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 interface CountrySalesData {
   id: string;
@@ -11,7 +12,7 @@ interface CountrySalesData {
   color: string;
 }
 
-const countrySalesData: Record<string, CountrySalesData> = {
+const defaultCountrySales: Record<string, CountrySalesData> = {
   usa: {
     id: "usa",
     name: "United States",
@@ -50,12 +51,40 @@ const countrySalesData: Record<string, CountrySalesData> = {
 };
 
 export default function SalesByCountries() {
+  const [salesMap, setSalesMap] = useState<Record<string, CountrySalesData>>(defaultCountrySales);
   const [activeData, setActiveData] = useState<CountrySalesData | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
   const [period, setPeriod] = useState("This Week");
 
+  useEffect(() => {
+    async function loadCountrySales() {
+      try {
+        const { data, error } = await supabase.from("country_sales").select("*");
+        if (data && !error && data.length > 0) {
+          const updated: Record<string, CountrySalesData> = { ...defaultCountrySales };
+          data.forEach((item) => {
+            if (updated[item.id]) {
+              updated[item.id] = {
+                id: item.id,
+                name: item.country_name,
+                sales: item.sales_count,
+                salesFormatted: `${item.sales_count} Sales`,
+                color: updated[item.id].color,
+              };
+            }
+          });
+          setSalesMap(updated);
+        }
+      } catch (err) {
+        console.error("Failed to load country sales from Supabase:", err);
+      }
+    }
+
+    loadCountrySales();
+  }, []);
+
   const handleHover = (e: React.MouseEvent<SVGPathElement>, key: string) => {
-    const data = countrySalesData[key];
+    const data = salesMap[key];
     if (data) {
       const svg = e.currentTarget.closest("svg");
       if (svg) {
@@ -75,7 +104,7 @@ export default function SalesByCountries() {
   };
 
   const handleClick = (key: string) => {
-    const data = countrySalesData[key];
+    const data = salesMap[key];
     if (data) {
       setActiveData(data);
     }

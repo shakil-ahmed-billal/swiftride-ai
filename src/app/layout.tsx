@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Rubik } from "next/font/google";
+import { Plus_Jakarta_Sans, Rubik, Caveat } from "next/font/google";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -14,6 +14,12 @@ const rubik = Rubik({
   weight: ["400", "500", "600", "700"],
 });
 
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-caveat",
+  weight: ["600", "700"],
+});
+
 export const metadata: Metadata = {
   title: "SwiftRide AI - Fast & Easy Car Rental Platform",
   description: "A high-performing web-based car rental platform for any rent-a-car company and website.",
@@ -25,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${rubik.variable} scroll-smooth`}>
+    <html lang="en" className={`${plusJakarta.variable} ${rubik.variable} ${caveat.variable} scroll-smooth`}>
       <body className="font-sans antialiased text-[#1A202C] bg-white selection:bg-blue-600 selection:text-white">
         {children}
       </body>

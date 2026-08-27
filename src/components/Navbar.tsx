@@ -2,26 +2,27 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="w-full bg-[#3563E9] text-white relative z-50">
-      <div className="max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-16 h-[72px] lg:h-[80px] flex items-center justify-between">
+    <header className="absolute top-0 left-0 right-0 w-full z-50 bg-transparent text-white">
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-16 h-20 sm:h-24 flex items-center justify-between">
         {/* Brand Logo */}
         <Link
           href="/"
-          className="text-white font-semibold text-2xl lg:text-[32px] tracking-tight"
+          className="text-white font-bold text-2xl lg:text-3xl tracking-tight"
         >
           Logo
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-7 xl:gap-8">
+        <nav className="hidden lg:flex items-center gap-8 xl:gap-10">
           <Link
             href="#home"
-            className="text-white font-semibold text-base tracking-tight hover:opacity-90 transition-opacity"
+            className="text-white font-semibold text-base tracking-tight relative pb-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-white"
           >
             Home
           </Link>
@@ -52,19 +53,17 @@ export default function Navbar() {
         </nav>
 
         {/* Desktop Auth Buttons */}
-        <div className="hidden lg:flex items-center gap-5">
+        <div className="hidden lg:flex items-center gap-6">
           <Link
-            href="#register"
-            className="text-white/90 font-medium text-base tracking-tight underline hover:text-white transition-colors"
+            href="/admin/dashboard"
+            className="text-white font-medium text-base tracking-tight underline underline-offset-4 hover:text-white/80 transition-colors"
           >
             Register
           </Link>
 
-          <span className="w-px h-5 bg-white/30"></span>
-
           <Link
-            href="#login"
-            className="w-[82px] h-[38px] bg-white rounded flex items-center justify-center text-[#3563E9] font-semibold text-sm tracking-tight hover:bg-white/90 transition-all shadow-sm"
+            href="/admin/dashboard"
+            className="px-6 py-2.5 bg-white text-[#3563E9] font-bold text-sm rounded-[6px] tracking-tight hover:bg-white/95 transition-all shadow-md active:scale-95"
           >
             Log In
           </Link>
@@ -73,22 +72,16 @@ export default function Navbar() {
         {/* Mobile Menu Toggle */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 text-white hover:bg-white/10 rounded transition-colors"
+          className="lg:hidden p-2 text-white hover:bg-white/10 rounded-[6px] transition-colors"
           aria-label="Toggle Navigation"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {mobileMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
       {/* Mobile Dropdown Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#274CC0] px-6 py-4 space-y-3 border-t border-white/10 shadow-lg">
+        <div className="lg:hidden bg-[#1E3A8A]/95 backdrop-blur-md px-6 py-5 space-y-4 border-t border-white/10 shadow-2xl animate-in fade-in slide-in-from-top-2">
           <Link
             href="#home"
             onClick={() => setMobileMenuOpen(false)}
@@ -124,18 +117,18 @@ export default function Navbar() {
           >
             Testimonial
           </Link>
-          <div className="pt-3 border-t border-white/20 flex items-center justify-between">
+          <div className="pt-4 border-t border-white/20 flex items-center justify-between">
             <Link
-              href="#register"
+              href="/admin/dashboard"
               onClick={() => setMobileMenuOpen(false)}
               className="text-white underline text-sm font-medium"
             >
               Register
             </Link>
             <Link
-              href="#login"
+              href="/admin/dashboard"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-5 py-2 bg-white text-[#3563E9] font-semibold text-sm rounded shadow"
+              className="px-5 py-2 bg-white text-[#3563E9] font-bold text-sm rounded-[6px] shadow"
             >
               Log In
             </Link>
