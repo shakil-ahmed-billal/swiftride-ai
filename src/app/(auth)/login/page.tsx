@@ -8,6 +8,7 @@ import {
   Eye,
   EyeOff,
   Headphones,
+  Home,
   Loader2,
   Lock,
   Mail,
@@ -207,15 +208,25 @@ export default function LoginPage() {
 
         {/* ================= RIGHT SIDE DIV ================= */}
         <div className="lg:col-span-5 xl:col-span-5 flex flex-col justify-between items-center lg:items-end h-full">
-          {/* Top Right Auth Switch */}
-          <div className="w-full max-w-[450px] flex justify-end text-xs sm:text-sm font-medium">
-            <span className="text-slate-600">Don&apos;t have an account? </span>
+          {/* Top Right Auth Switch + Back to Home Button */}
+          <div className="w-full max-w-[450px] flex items-center justify-between text-xs sm:text-sm font-medium">
             <Link
-              href="/register"
-              className="text-[#3563E9] font-bold hover:underline ml-1"
+              href="/"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/90 hover:bg-white text-slate-700 hover:text-[#3563E9] rounded-[6px] border border-slate-200 shadow-2xs font-semibold text-xs transition-all cursor-pointer"
             >
-              Register
+              <Home className="w-3.5 h-3.5 text-[#3563E9]" />
+              <span>Back to Home</span>
             </Link>
+
+            <div>
+              <span className="text-slate-600">Don&apos;t have an account? </span>
+              <Link
+                href="/register"
+                className="text-[#3563E9] font-bold hover:underline ml-1"
+              >
+                Register
+              </Link>
+            </div>
           </div>
 
           {/* Center Form */}
