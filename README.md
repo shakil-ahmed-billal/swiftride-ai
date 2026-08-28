@@ -1,4 +1,4 @@
-# SwiftRide AI — Luxury & Smart Car Rental Platform 🚗✨
+# SwiftRide AI — Luxury & Smart Car Rental Platform
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.3.3-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.2.8-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
@@ -8,19 +8,19 @@
 [![Google Gemini](https://img.shields.io/badge/Gemini_AI-3.6_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 [![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://swiftride-ai.vercel.app/)
 
-> **SwiftRide AI** is an intelligent, high-performance luxury and accessible car rental web platform. It pairs a sleek automotive booking experience with an autonomous **AI Concierge Assistant**, real-time database reactivity via **Supabase PostgreSQL & WebSockets**, and strict **Next.js 16 Proxy Route Security**.
+> **SwiftRide AI** is an enterprise-grade car rental platform engineered with Next.js 16 App Router, React 19, TypeScript, and Supabase. It features an autonomous AI Concierge Assistant with automated lead capture, real-time database updates via WebSockets, and strict server-side proxy security.
 
 ---
 
-## 🌐 Live Application & Links
+## Live Application & Repository
 
-- **🚀 Live Deployment:** [https://swiftride-ai.vercel.app/](https://swiftride-ai.vercel.app/)
-- **📦 GitHub Repository:** [https://github.com/shakil-ahmed-billal/swiftride-ai](https://github.com/shakil-ahmed-billal/swiftride-ai)
-- **📄 Product Requirements Document:** [PRD.md](file:///Users/shakilahmedbillal/Desktop/experiment/swiftride-ai/PRD.md)
+- **Live Deployment:** [https://swiftride-ai.vercel.app/](https://swiftride-ai.vercel.app/)
+- **GitHub Repository:** [https://github.com/shakil-ahmed-billal/swiftride-ai](https://github.com/shakil-ahmed-billal/swiftride-ai)
+- **Product Requirements Document:** [PRD.md](file:///Users/shakilahmedbillal/Desktop/experiment/swiftride-ai/PRD.md)
 
 ---
 
-## 🔑 Demo Access Credentials
+## Demo Access Credentials
 
 | Role | Email | Password | Access Portal |
 | :--- | :--- | :--- | :--- |
@@ -29,29 +29,29 @@
 
 ---
 
-## 🌟 Key Features
+## Key Features
 
-### 1. 🤖 Autonomous AI Concierge Assistant
-- **3-Tier AI Reliability Engine:** Google Gemini AI (Tier 1) $\rightarrow$ OpenRouter Multi-LLM Fallback (Tier 2) $\rightarrow$ Offline Smart Local Engine (Tier 3).
-- **Contextual In-Chat Car Booking:** Discuss any vehicle (e.g., *Range Rover Velar*) and say *"ok book korte chai form dew"* — the assistant instantly opens an interactive reservation card inside the chat stream.
-- **Dynamic Fleet Display:** Recommends the entire active fleet (6 vehicles) on request, or adjusts dynamically (e.g. *"show just 1 car"*).
-- **Markdown Image Rendering:** Visual vehicle photographs render natively inside chat bubbles.
-- **Instant Discord Webhook Lead Alerts:** Automatically captures customer phone numbers, emails, and notes, dispatching hot leads straight to Discord sales channels.
+### 1. Autonomous AI Concierge Assistant
+- **Three-Tier Fallback Architecture:** Google Gemini AI (Tier 1) -> OpenRouter Multi-LLM Fallback (Tier 2) -> Smart Local Conversational Engine (Tier 3).
+- **Contextual In-Chat Car Booking:** When discussing any vehicle (such as the Range Rover Velar), requesting a booking (e.g. *"I want to book this car, please provide the reservation form"*) automatically activates the interactive reservation form within the chat stream.
+- **Dynamic Fleet Display:** Retrieves and displays active vehicles from live inventory on demand, adjusting vehicle counts dynamically based on user prompts.
+- **Markdown Image Rendering:** Visual vehicle previews are rendered natively within chat messages.
+- **Automated Discord Lead Dispatcher:** Parses customer contact details from conversations and dispatches real-time alerts to designated Discord sales webhooks.
 
-### 2. ⚡ Real-Time User & Admin Portals
-- **Supabase Realtime WebSockets:** Live booking updates pop up instantly on the user dashboard without requiring a manual page refresh.
+### 2. Real-Time User & Admin Portals
+- **Supabase Realtime WebSockets:** Live bookings immediately appear in the user dashboard without requiring manual page reloads.
 - **Verified Email Locking:** Auto-populates and locks the driver's verified account email during the booking flow.
-- **Rental Agreements & Digital Receipts:** View itemized transaction summaries and trigger PDF receipt downloads.
-- **Admin Operations:** Comprehensive revenue metrics, POS interface, fleet status, and global sales growth analytics.
+- **Rental Agreements & Digital Receipts:** Itemized reservation summaries with digital receipt download support.
+- **Admin Operations Hub:** Comprehensive revenue statistics, point-of-sale management, inventory controls, and regional growth metrics.
 
-### 3. 🛡️ Next.js 16 Proxy Security (`src/proxy.ts`)
-- **Airtight Route Protection:** Blocks unauthenticated guests from accessing `/user/*` or `/admin/*`, redirecting them to `/login`.
-- **Role Isolation:** Prevents standard users from tampering with or viewing the `/admin/*` operations hub.
-- **Auth Page Redirection:** Automatically routes logged-in members away from `/login` or `/register` to their respective dashboards.
+### 3. Next.js 16 Proxy Security (`src/proxy.ts`)
+- **Airtight Route Protection:** Restricts unauthenticated users from accessing `/user/*` or `/admin/*`, redirecting them to `/login`.
+- **Role Isolation:** Prevents standard users from accessing `/admin/*` operations routes.
+- **Auth Page Redirection:** Automatically routes authenticated users away from `/login` or `/register` to their respective dashboards.
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Layer | Technology |
 | :--- | :--- |
@@ -64,11 +64,11 @@
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v20+ recommended)
-- [pnpm](https://pnpm.io/) (`npm install -g pnpm`)
+- Node.js (v20+ recommended)
+- pnpm (`npm install -g pnpm`)
 
 ### 1. Clone the Repository
 ```bash
@@ -82,7 +82,7 @@ pnpm install
 ```
 
 ### 3. Configure Environment Variables
-Create a `.env.local` file in the root directory and add your credentials:
+Create a `.env.local` file in the root directory and configure credentials:
 
 ```env
 # Supabase Configuration
@@ -99,7 +99,7 @@ DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/your-webhook-url"
 ```
 
 ### 4. Seed Database
-Initialize vehicle inventory and admin user credentials:
+Initialize vehicle inventory and administrative credentials:
 ```bash
 pnpm db:reset
 pnpm db:seed
@@ -110,59 +110,59 @@ pnpm db:seed:admin
 ```bash
 pnpm dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser to experience SwiftRide AI.
+Navigate to [http://localhost:3000](http://localhost:3000) to view the application.
 
 ---
 
-## 📁 Project Directory Structure
+## Project Directory Structure
 
 ```text
 swiftride-ai/
-├── public/                     # Static car assets & icons
-│   ├── car-image/              # High-resolution vehicle images
-│   └── admin-dashboard/        # Operations hub icons & charts
+├── public/                     # Static vehicle assets and icons
+│   ├── car-image/              # High-resolution vehicle photographs
+│   └── admin-dashboard/        # Operations hub icons and charts
 ├── src/
 │   ├── app/
-│   │   ├── (auth)/             # Login & Register routes
+│   │   ├── (auth)/             # Authentication routes (login, register)
 │   │   ├── (dashboard)/
-│   │   │   ├── admin/          # Admin operations portal
-│   │   │   └── user/           # User dashboard & booking history
+│   │   │   ├── admin/          # Administrator operations portal
+│   │   │   └── user/           # User dashboard and reservation history
 │   │   ├── api/
-│   │   │   └── ai/chat/        # AI Concierge fallback engine
-│   │   ├── layout.tsx          # Root layout with data-scroll-behavior
-│   │   └── page.tsx            # Main landing page & hero catalog
+│   │   │   └── ai/chat/        # AI Concierge assistant route handler
+│   │   ├── layout.tsx          # Root application layout
+│   │   └── page.tsx            # Landing page and fleet catalog
 │   ├── components/
-│   │   ├── admin/              # Admin dashboard widgets & headers
-│   │   ├── ai-assistant/       # ChatWidget & inline reservation modal
+│   │   ├── admin/              # Admin dashboard widgets
+│   │   ├── ai-assistant/       # ChatWidget and inline booking modal
 │   │   ├── user/               # User dashboard components
-│   │   ├── Hero.tsx            # Hero banner & overlapping search
-│   │   ├── Navbar.tsx          # Navigation bar with auth state
-│   │   └── PopularCars.tsx     # Fleet catalog & reservation drawer
+│   │   ├── Hero.tsx            # Hero banner and search overlay
+│   │   ├── Navbar.tsx          # Navigation header with auth controls
+│   │   └── PopularCars.tsx     # Fleet catalog and reservation drawer
 │   ├── lib/
-│   │   └── supabase.ts         # Supabase client & cookie sync engine
+│   │   └── supabase.ts         # Supabase client and cookie synchronization
 │   ├── store/
-│   │   └── useChatStore.ts     # Zustand store for AI assistant
+│   │   └── useChatStore.ts     # Zustand store for AI assistant state
 │   └── proxy.ts                # Next.js 16 Proxy security engine
-├── scripts/                    # Supabase database seed scripts
+├── scripts/                    # Database seeding and migration scripts
 ├── PRD.md                      # Product Requirements Document
-├── README.md                   # Project overview & documentation
+├── README.md                   # Project documentation
 └── package.json                # Project dependencies and scripts
 ```
 
 ---
 
-## 📜 Available PNPM Scripts
+## Available PNPM Scripts
 
-- `pnpm dev` — Starts the Next.js local development server with Turbopack.
-- `pnpm lint` — Runs ESLint code quality checks.
-- `pnpm db:seed` — Seeds live vehicle fleet into Supabase `cars` table.
-- `pnpm db:seed:admin` — Seeds administrative credentials into Supabase.
-- `pnpm db:reset` — Cleans up and resets database tables.
+- `pnpm dev` — Starts the local Next.js development server with Turbopack.
+- `pnpm lint` — Executes ESLint code quality checks.
+- `pnpm db:seed` — Seeds inventory into the Supabase `cars` table.
+- `pnpm db:seed:admin` — Seeds administrative user credentials.
+- `pnpm db:reset` — Resets database tables and schema state.
 
 ---
 
-## 👨‍💻 Author & Contributions
+## Author & Contributions
 
 - **Developer:** Shakil Ahmed Billal ([@shakil-ahmed-billal](https://github.com/shakil-ahmed-billal))
-- **Live Demo:** [https://swiftride-ai.vercel.app/](https://swiftride-ai.vercel.app/)
-- **License:** MIT License — Free for commercial and educational use.
+- **Live Deployment:** [https://swiftride-ai.vercel.app/](https://swiftride-ai.vercel.app/)
+- **License:** MIT License

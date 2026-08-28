@@ -243,21 +243,23 @@ export default function ChatWidget() {
         </button>
       )}
 
-      {/* Premium Brand-Styled Chat Window */}
+      {/* Main Slide-Over / Popup Chat Window */}
       {isOpen && (
-        <div className="flex h-[560px] w-88 sm:w-[410px] flex-col rounded-[10px] border border-slate-200 bg-white shadow-[0px_10px_40px_rgba(11,19,42,0.15)] transition-all duration-300 animate-in slide-in-from-bottom-4">
-          {/* Header Bar (Gradient Accent: Deep Slate #0B132A to Royal Blue #3563E9) */}
-          <div className="flex items-center justify-between bg-gradient-to-r from-[#0B132A] via-[#1E3A8A] to-[#3563E9] px-4 py-3 text-white border-b border-white/10 shrink-0 rounded-t-[10px]">
+        <div className="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-32px)] sm:w-[380px] h-[540px] max-h-[85vh] bg-white rounded-[10px] shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 font-sans">
+          {/* Header */}
+          <div className="px-4 py-3 bg-gradient-to-r from-[#0B132A] via-[#1E3A8A] to-[#3563E9] text-white flex items-center justify-between border-b border-white/10 shrink-0">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-[6px] bg-white/15 backdrop-blur-md flex items-center justify-center text-white shrink-0 border border-white/20 shadow-xs">
-                <CarIcon className="w-4.5 h-4.5 text-white" />
+              <div className="w-8 h-8 rounded-[6px] bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20">
+                <CarIcon className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-white leading-tight flex items-center gap-1.5">
-                  <span>SwiftRide AI Assistant</span>
-                  <Sparkles className="w-3.5 h-3.5 text-[#FA8231]" />
-                </h4>
-                <p className="text-[10px] text-white/85 flex items-center gap-1 font-medium">
+                <div className="flex items-center gap-1.5">
+                  <h3 className="font-bold text-xs text-white leading-tight">
+                    SwiftRide AI Assistant
+                  </h3>
+                  <Sparkles className="w-3 h-3 text-amber-300" />
+                </div>
+                <p className="text-[10px] text-emerald-300 font-medium flex items-center gap-1 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <span>Online • Instant Car Recommendations</span>
                 </p>

@@ -158,7 +158,7 @@ export default function UserDashboardPage() {
             <span>Verified Driver • {user?.email || "user@swiftride.com"}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Welcome back, {user?.full_name || "Valued Driver"}! 👋
+            Welcome back, {user?.full_name || "Valued Driver"}!
           </h1>
           <p className="text-xs sm:text-sm text-white/85 leading-relaxed">
             {activeTrip
