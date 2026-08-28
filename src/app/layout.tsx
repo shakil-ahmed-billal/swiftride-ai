@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${rubik.variable} ${caveat.variable} scroll-smooth`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${plusJakarta.variable} ${rubik.variable} ${caveat.variable} scroll-smooth`}>
       <body className="font-sans antialiased text-[#1A202C] bg-white selection:bg-blue-[#3563E9] selection:text-white">
         {children}
         <ChatWidget />
