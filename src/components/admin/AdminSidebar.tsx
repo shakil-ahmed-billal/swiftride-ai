@@ -1,43 +1,45 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
 import {
-  LayoutGrid,
-  KeyRound,
-  Package,
-  PlusSquare,
-  Clock,
-  TrendingDown,
-  LayoutList,
-  Boxes,
-  Award,
-  Box,
-  SlidersHorizontal,
-  ShieldCheck,
-  Barcode,
-  QrCode,
-  Layers,
   ArrowLeftRight,
-  ShoppingCart,
-  FileText,
-  RotateCcw,
-  Receipt,
-  Monitor,
-  Ticket,
-  Gift,
-  Percent,
-  ChevronsLeft,
+  Award,
+  Barcode,
+  Box,
+  Boxes,
   ChevronDown,
   ChevronRight,
+  ChevronsLeft,
+  Clock,
+  FileText,
+  Gift,
+  KeyRound,
+  Layers,
+  LayoutGrid,
+  LayoutList,
+  Monitor,
+  Package,
+  Percent,
+  PlusSquare,
+  QrCode,
+  Receipt,
+  RotateCcw,
+  ShieldCheck,
+  ShoppingCart,
+  SlidersHorizontal,
+  Ticket,
+  TrendingDown,
   X,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React, { useState } from "react";
 
 interface AdminSidebarProps {
   isOpenMobile?: boolean;
   onCloseMobile?: () => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 interface NavItem {
@@ -119,9 +121,17 @@ const navGroups: NavGroup[] = [
 export default function AdminSidebar({
   isOpenMobile = false,
   onCloseMobile,
+  isCollapsed: externalIsCollapsed,
+  onToggleCollapse,
 }: AdminSidebarProps) {
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [internalIsCollapsed, setInternalIsCollapsed] = useState(false);
+  const isCollapsed =
+    externalIsCollapsed !== undefined
+      ? externalIsCollapsed
+      : internalIsCollapsed;
+  const toggleCollapse =
+    onToggleCollapse || (() => setInternalIsCollapsed(!internalIsCollapsed));
 
   return (
     <>
@@ -143,7 +153,7 @@ export default function AdminSidebar({
       >
         {/* Collapse Button: Exactly 50% inside, 50% outside right border line */}
         <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={toggleCollapse}
           type="button"
           className="hidden lg:flex absolute -right-2.5 top-6 z-50 w-5 h-5 rounded-full bg-[#FA8231] hover:bg-[#E06D1F] text-white items-center justify-center border-2 border-white shadow-xs transition-transform active:scale-90 cursor-pointer"
           title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
@@ -156,16 +166,25 @@ export default function AdminSidebar({
         </button>
 
         {/* Brand Header with Larger Logo */}
-        <div className="h-16 px-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white relative">
-          <Link href="/admin/dashboard" className="flex items-center gap-2 overflow-hidden py-1">
-            <Image
-              src="/admin-dashboard/dashboard_1.webp"
-              alt="BestCar Logo"
-              width={130}
-              height={40}
-              className="h-9 w-auto object-contain transition-all"
-              priority
-            />
+        <div className="h-16 px-3.5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white relative">
+          <Link
+            href="/admin/dashboard"
+            className="flex items-center gap-2 overflow-hidden py-1"
+          >
+            {isCollapsed ? (
+              <div className="w-8 h-8 rounded-[6px] bg-[#FFF5ED] border border-[#FA8231]/30 text-[#FA8231] font-extrabold text-sm flex items-center justify-center shadow-2xs shrink-0 mx-auto">
+                SR
+              </div>
+            ) : (
+              <Image
+                src="/admin-dashboard/dashboard_1.webp"
+                alt="SwiftRide Logo"
+                width={130}
+                height={40}
+                className="h-9 w-auto object-contain transition-all"
+                priority
+              />
+            )}
           </Link>
 
           {/* Mobile Close Button */}
@@ -196,7 +215,9 @@ export default function AdminSidebar({
                   const Icon = item.icon;
                   const isActive =
                     item.href === pathname ||
-                    (item.href !== "#" && item.href !== "/" && pathname?.startsWith(item.href || ""));
+                    (item.href !== "#" &&
+                      item.href !== "/" &&
+                      pathname?.startsWith(item.href || ""));
 
                   return (
                     <Link

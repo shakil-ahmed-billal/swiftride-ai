@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Heart, Fuel, Gauge, Users, Check, X } from "lucide-react";
-import { supabase, Car } from "@/lib/supabase";
+import { Heart, Fuel, Gauge, Users, Check, X, CarIcon } from "lucide-react";
+import { supabase, Car, getStoredAuthUser } from "@/lib/supabase";
+import Link from "next/link";
 
 export default function PopularCars() {
   const [activeTab, setActiveTab] = useState("Popular");
@@ -18,8 +19,22 @@ export default function PopularCars() {
   const [rentalDays, setRentalDays] = useState(3);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
   const tabs = ["Popular", "Large Car", "Small Car", "Exclusive Car"];
+
+  useEffect(() => {
+    if (selectedCar) {
+      const storedUser = getStoredAuthUser();
+      if (storedUser && storedUser.email) {
+        setIsUserLoggedIn(true);
+        if (storedUser.full_name) setCustomerName(storedUser.full_name);
+        setCustomerEmail(storedUser.email);
+      } else {
+        setIsUserLoggedIn(false);
+      }
+    }
+  }, [selectedCar]);
 
   useEffect(() => {
     async function fetchCars() {
@@ -58,12 +73,14 @@ export default function PopularCars() {
     setIsSubmitting(true);
     try {
       const totalAmount = selectedCar.price_per_day * rentalDays;
-      const txId = `#${Math.floor(100000000000 + Math.random() * 900000000000)}`;
+      const txId = `#SR-${Math.floor(1000000 + Math.random() * 9000000)}`;
+      const cleanEmail = customerEmail.trim().toLowerCase();
+      const cleanName = customerName.trim();
 
       const { error } = await supabase.from("bookings").insert([
         {
-          customer_name: customerName,
-          customer_email: customerEmail,
+          customer_name: cleanName,
+          customer_email: cleanEmail,
           car_id: selectedCar.id,
           car_name: selectedCar.name,
           car_image: selectedCar.image,
@@ -82,8 +99,6 @@ export default function PopularCars() {
         setTimeout(() => {
           setBookingSuccess(false);
           setSelectedCar(null);
-          setCustomerName("");
-          setCustomerEmail("");
         }, 2200);
       }
     } catch (err) {
@@ -237,100 +252,241 @@ export default function PopularCars() {
         </div>
       </div>
 
-      {/* Live Booking Modal Popup */}
+      {/* Right Side Slide-Over Drawer */}
       {selectedCar && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-[10px] max-w-[480px] w-full p-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 border border-slate-100">
-            <button
-              onClick={() => setSelectedCar(null)}
-              className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          {/* Backdrop */}
+          <div
+            onClick={() => setSelectedCar(null)}
+            className="fixed inset-0 bg-[#0B132A]/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+          />
 
-            {bookingSuccess ? (
-              <div className="py-8 text-center space-y-3">
-                <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto">
-                  <Check className="w-6 h-6" />
+          {/* Right Drawer Panel */}
+          <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white shadow-2xl flex flex-col border-l border-slate-200 animate-in slide-in-from-right duration-300 ease-in-out">
+            {/* Drawer Header */}
+            <div className="px-6 py-5 bg-[#0B132A] text-white flex items-center justify-between border-b border-white/10 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-[6px] bg-[#3563E9] flex items-center justify-center text-white shrink-0 shadow-xs">
+                  <CarIcon className="w-4 h-4" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">Booking Confirmed!</h3>
-                <p className="text-slate-600 text-sm">
-                  Your reservation for <span className="font-semibold text-[#3563E9]">{selectedCar.name}</span> has been saved in the Supabase backend.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleBookingSubmit} className="space-y-4">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900">Rent {selectedCar.name}</h3>
-                  <p className="text-xs text-slate-500">
-                    Daily Rate: ${selectedCar.price_per_day}/day • {selectedCar.seats} Seats
+                  <h3 className="text-base font-bold text-white leading-tight">
+                    Vehicle Reservation
+                  </h3>
+                  <p className="text-[11px] text-slate-300 mt-0.5">
+                    Fast & Secure Live Booking
                   </p>
                 </div>
+              </div>
 
-                <div className="w-full h-36 bg-slate-50 rounded-[8px] flex items-center justify-center p-2 relative overflow-hidden">
-                  <Image
-                    src={selectedCar.image}
-                    alt={selectedCar.name}
-                    width={280}
-                    height={160}
-                    className="object-contain max-h-32 w-auto"
-                    unoptimized={selectedCar.image.startsWith("http")}
-                  />
+              <button
+                onClick={() => setSelectedCar(null)}
+                type="button"
+                className="p-1.5 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+                aria-label="Close drawer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Drawer Body (Scrollable) */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-5">
+              {bookingSuccess ? (
+                <div className="py-12 text-center space-y-4">
+                  <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-200 shadow-md animate-in zoom-in-95">
+                    <Check className="w-8 h-8" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-xl font-extrabold text-[#0B132A]">
+                      Reservation Confirmed!
+                    </h3>
+                    <p className="text-xs text-slate-600 max-w-xs mx-auto">
+                      Your booking for{" "}
+                      <span className="font-bold text-[#3563E9]">
+                        {selectedCar.name}
+                      </span>{" "}
+                      has been registered successfully in our Supabase system.
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-[8px] text-xs text-left space-y-1.5 mt-4">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Vehicle:</span>
+                      <span className="font-bold text-[#0B132A]">{selectedCar.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Duration:</span>
+                      <span className="font-semibold text-slate-700">{rentalDays} Days</span>
+                    </div>
+                    <div className="flex justify-between pt-1 border-t border-slate-200 font-bold text-sm">
+                      <span className="text-[#0B132A]">Total Amount:</span>
+                      <span className="text-[#3563E9]">
+                        ${(selectedCar.price_per_day * rentalDays).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 flex flex-col gap-2">
+                    <Link
+                      href="/user/dashboard"
+                      onClick={() => setSelectedCar(null)}
+                      className="w-full py-2.5 bg-[#3563E9] hover:bg-[#274CC0] text-white text-xs font-bold rounded-[5px] text-center shadow-md transition-colors"
+                    >
+                      View in User Dashboard
+                    </Link>
+                    <button
+                      onClick={() => setSelectedCar(null)}
+                      type="button"
+                      className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-[5px] transition-colors"
+                    >
+                      Close & Continue Browsing
+                    </button>
+                  </div>
                 </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Your Full Name</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. John Doe"
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-[5px] focus:outline-none focus:border-[#3563E9]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="e.g. john@example.com"
-                      value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
-                      className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-[5px] focus:outline-none focus:border-[#3563E9]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Rental Duration (Days)</label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={30}
-                      value={rentalDays}
-                      onChange={(e) => setRentalDays(Number(e.target.value))}
-                      className="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-[5px] focus:outline-none focus:border-[#3563E9]"
-                    />
-                  </div>
-
-                  <div className="p-3 bg-blue-50/60 rounded-[6px] flex items-center justify-between text-sm">
-                    <span className="font-semibold text-slate-700">Estimated Total:</span>
-                    <span className="font-bold text-lg text-[#3563E9]">
-                      ${(selectedCar.price_per_day * rentalDays).toFixed(2)}
+              ) : (
+                <form id="drawer-booking-form" onSubmit={handleBookingSubmit} className="space-y-5">
+                  {/* Vehicle Spotlight Card */}
+                  <div className="bg-[#F6F7F9] border border-slate-200 rounded-[10px] p-4 text-center relative overflow-hidden">
+                    <span className="absolute top-3 left-3 px-2 py-0.5 bg-[#3563E9] text-white text-[10px] font-bold rounded-[4px]">
+                      ${selectedCar.price_per_day}/day
                     </span>
-                  </div>
-                </div>
 
+                    <div className="w-full h-36 flex items-center justify-center my-2">
+                      <Image
+                        src={selectedCar.image}
+                        alt={selectedCar.name}
+                        width={280}
+                        height={150}
+                        style={{ width: "auto", height: "auto" }}
+                        className="object-contain max-h-32 drop-shadow-md"
+                        unoptimized={selectedCar.image.startsWith("http")}
+                      />
+                    </div>
+
+                    <h4 className="text-base font-bold text-[#0B132A]">
+                      {selectedCar.name}
+                    </h4>
+
+                    {/* Specs Badges */}
+                    <div className="flex items-center justify-center gap-4 mt-2 text-[11px] font-medium text-[#596780]">
+                      <span>{selectedCar.seats} Seats</span>
+                      <span>•</span>
+                      <span>{selectedCar.transmission}</span>
+                      <span>•</span>
+                      <span>{selectedCar.fuel_type}</span>
+                    </div>
+                  </div>
+
+                  {/* Customer Information Inputs */}
+                  <div className="space-y-3">
+                    <h5 className="text-xs font-bold text-[#0B132A] uppercase tracking-wider">
+                      Driver Information
+                    </h5>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Eleanor Pena"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                        className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-[5px] bg-slate-50 focus:bg-white focus:outline-none focus:border-[#3563E9] transition-all"
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-xs font-semibold text-slate-700">
+                          Email Address
+                        </label>
+                        {isUserLoggedIn && (
+                          <span className="text-[10px] font-bold text-emerald-600">
+                            Verified Logged-in Account (Locked)
+                          </span>
+                        )}
+                      </div>
+                      <input
+                        type="email"
+                        required
+                        readOnly={isUserLoggedIn}
+                        placeholder="e.g. eleanor@example.com"
+                        value={customerEmail}
+                        onChange={(e) => setCustomerEmail(e.target.value)}
+                        className={`w-full px-3.5 py-2 text-xs border rounded-[5px] transition-all ${
+                          isUserLoggedIn
+                            ? "bg-slate-100 border-slate-200 text-slate-600 font-semibold cursor-not-allowed"
+                            : "bg-slate-50 border-slate-200 focus:bg-white focus:outline-none focus:border-[#3563E9]"
+                        }`}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Rental Duration (Days)
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={30}
+                        value={rentalDays}
+                        onChange={(e) => setRentalDays(Number(e.target.value))}
+                        className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-[5px] bg-slate-50 focus:bg-white focus:outline-none focus:border-[#3563E9] transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Summary & Price Calculation Box */}
+                  <div className="p-4 bg-blue-50/70 border border-blue-100 rounded-[8px] space-y-2">
+                    <div className="flex justify-between text-xs text-slate-600">
+                      <span>Daily Rate:</span>
+                      <span className="font-semibold">${selectedCar.price_per_day}.00</span>
+                    </div>
+                    <div className="flex justify-between text-xs text-slate-600">
+                      <span>Duration:</span>
+                      <span className="font-semibold">{rentalDays} Days</span>
+                    </div>
+                    <div className="border-t border-blue-200/60 pt-2 flex items-center justify-between">
+                      <span className="text-xs font-bold text-[#0B132A]">
+                        Estimated Total Price:
+                      </span>
+                      <span className="text-xl font-extrabold text-[#3563E9]">
+                        ${(selectedCar.price_per_day * rentalDays).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </form>
+              )}
+            </div>
+
+            {/* Drawer Footer (Fixed CTA Bar) */}
+            {!bookingSuccess && (
+              <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center gap-3 shrink-0">
+                <button
+                  onClick={() => setSelectedCar(null)}
+                  type="button"
+                  className="px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-[5px] text-xs font-semibold transition-colors"
+                >
+                  Cancel
+                </button>
                 <button
                   type="submit"
+                  form="drawer-booking-form"
                   disabled={isSubmitting}
-                  className="w-full py-2.5 bg-[#3563E9] hover:bg-[#254EDB] text-white font-semibold text-sm rounded-[5px] transition-all shadow-sm active:scale-98 disabled:opacity-50 cursor-pointer"
+                  className="flex-1 py-2.5 bg-[#3563E9] hover:bg-[#274CC0] text-white font-bold text-xs rounded-[5px] shadow-md transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  {isSubmitting ? "Processing Reservation..." : "Confirm & Book Now"}
+                  {isSubmitting ? (
+                    "Processing..."
+                  ) : (
+                    <>
+                      <span>Confirm & Rent Now</span>
+                      <Check className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
-              </form>
+              </div>
             )}
           </div>
         </div>

@@ -6,15 +6,47 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 if (!supabaseUrl || !supabaseAnonKey) {
   if (typeof window !== "undefined") {
     console.warn(
-      "Supabase URL or Anon Key is missing. Please check your .env.local configuration."
+      "Supabase URL or Anon Key is missing. Please check your .env.local configuration.",
     );
   }
 }
 
 export const supabase = createClient(
   supabaseUrl || "https://placeholder.supabase.co",
-  supabaseAnonKey || "placeholder-anon-key"
+  supabaseAnonKey || "placeholder-anon-key",
 );
+
+export type AuthUser = {
+  id: string;
+  email: string;
+  full_name: string;
+  role?: "admin" | "user" | string;
+};
+
+export const getStoredAuthUser = (): AuthUser | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem("swiftride_auth_user");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const setStoredAuthUser = (user: AuthUser | null) => {
+  if (typeof window === "undefined") return;
+  if (user) {
+    localStorage.setItem("swiftride_auth_user", JSON.stringify(user));
+    const role = user.role || (user.email?.toLowerCase() === "admin@swiftride.com" ? "admin" : "user");
+    document.cookie = `swiftride_auth_role=${role}; path=/; max-age=2592000; SameSite=Lax`;
+    document.cookie = `swiftride_auth_user=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=2592000; SameSite=Lax`;
+  } else {
+    localStorage.removeItem("swiftride_auth_user");
+    document.cookie = "swiftride_auth_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    document.cookie = "swiftride_auth_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  }
+  window.dispatchEvent(new Event("swiftride-auth-changed"));
+};
 
 export type Car = {
   id: string;

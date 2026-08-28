@@ -1,11 +1,11 @@
 "use client";
 
 import AdminFooter from "@/components/admin/AdminFooter";
-import AdminHeader from "@/components/admin/AdminHeader";
-import AdminSidebar from "@/components/admin/AdminSidebar";
+import UserHeader from "@/components/user/UserHeader";
+import UserSidebar from "@/components/user/UserSidebar";
 import React, { useEffect, useState } from "react";
 
-export default function AdminLayout({
+export default function UserLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -15,7 +15,7 @@ export default function AdminLayout({
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("swiftride_admin_sidebar_collapsed");
+      const saved = localStorage.getItem("swiftride_user_sidebar_collapsed");
       if (saved !== null) {
         setIsCollapsed(saved === "true");
       }
@@ -26,7 +26,7 @@ export default function AdminLayout({
     setIsCollapsed((prev) => {
       const next = !prev;
       try {
-        localStorage.setItem("swiftride_admin_sidebar_collapsed", String(next));
+        localStorage.setItem("swiftride_user_sidebar_collapsed", String(next));
       } catch {}
       return next;
     });
@@ -34,24 +34,28 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-[#F6F7F9] flex flex-col antialiased">
-      {/* Sidebar Navigation */}
-      <AdminSidebar
+      {/* 1. 100% Full Width Top Header */}
+      <UserHeader
+        onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
+        isCollapsed={isCollapsed}
+        onToggleCollapse={handleToggleCollapse}
+      />
+
+      {/* 2. Full Height Left Sidebar below Header */}
+      <UserSidebar
         isOpenMobile={isMobileSidebarOpen}
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
         isCollapsed={isCollapsed}
         onToggleCollapse={handleToggleCollapse}
       />
 
-      {/* Main App Canvas: Transitions dynamically with sidebar width */}
+      {/* 3. Main App Canvas with Top Padding & Dynamic Sidebar Shift */}
       <div
-        className={`flex flex-col min-h-screen flex-1 transition-all duration-300 ease-in-out ${
+        className={`flex flex-col min-h-screen flex-1 pt-16 transition-all duration-300 ease-in-out ${
           isCollapsed ? "lg:pl-20" : "lg:pl-64"
         }`}
       >
-        {/* Sticky Top Navbar */}
-        <AdminHeader onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)} />
-
-        {/* Dynamic Page Content with Clean, Symmetrical Full Width Layout */}
+        {/* Dynamic Page Content */}
         <main className="flex-1 p-4 sm:p-5 lg:p-6 w-full mx-auto">
           {children}
         </main>

@@ -231,6 +231,7 @@ async function seedDatabase() {
 
   // 4. Seed Monthly Analytics
   console.log("\n📊 Seeding Monthly Analytics...");
+  await supabase.from("monthly_analytics").delete().neq("id", -1);
   const monthlyData = [
     { year: "2024", month: "Jan", month_index: 1, value: 38, revenue_formatted: "$38,400" },
     { year: "2024", month: "Feb", month_index: 2, value: 24, revenue_formatted: "$24,100" },
@@ -238,12 +239,12 @@ async function seedDatabase() {
     { year: "2024", month: "Apr", month_index: 4, value: 30, revenue_formatted: "$30,900" },
     { year: "2024", month: "May", month_index: 5, value: 55, revenue_formatted: "$55,000" },
     { year: "2024", month: "Jun", month_index: 6, value: 42, revenue_formatted: "$42,800" },
-    { year: "2024", month: "July", month_index: 7, value: 48, revenue_formatted: "$48,600" },
+    { year: "2024", month: "Jul", month_index: 7, value: 48, revenue_formatted: "$48,600" },
     { year: "2024", month: "Aug", month_index: 8, value: 35, revenue_formatted: "$35,300" },
     { year: "2024", month: "Sep", month_index: 9, value: 58, revenue_formatted: "$58,900" },
   ];
 
-  const { error: monthlyErr } = await supabase.from("monthly_analytics").upsert(monthlyData, { onConflict: "id" });
+  const { error: monthlyErr } = await supabase.from("monthly_analytics").insert(monthlyData);
   if (monthlyErr) {
     console.error("❌ Monthly analytics seeding failed:", monthlyErr.message);
   } else {

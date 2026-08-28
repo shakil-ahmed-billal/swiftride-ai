@@ -20,4 +20,8 @@
    - All page sections reside in `src/components/` with single-responsibility modular architecture.
    - Ensure clean TypeScript props and typing without `any`.
 4. **Zero Build Warnings / Errors:**
-   - Run `pnpm build` after major edits to verify TypeScript correctness and bundle optimization.
+   - Verify TypeScript correctness and bundle optimization without breaking directives.
+5. **Never Hardcode API Keys or Secrets:**
+   - Always read API keys and credentials strictly from environment variables (e.g., `process.env.OPENROUTER_API_KEY`, `process.env.GEMINI_API_KEY`).
+   - Do NOT include plain-text API keys or secrets directly inside `.ts`, `.tsx`, or `.js` source files.
+

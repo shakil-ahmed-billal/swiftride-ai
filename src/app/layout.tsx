@@ -25,6 +25,8 @@ export const metadata: Metadata = {
   description: "A high-performing web-based car rental platform for any rent-a-car company and website.",
 };
 
+import ChatWidget from "@/components/ai-assistant/ChatWidget";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,8 +34,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${plusJakarta.variable} ${rubik.variable} ${caveat.variable} scroll-smooth`}>
-      <body className="font-sans antialiased text-[#1A202C] bg-white selection:bg-blue-600 selection:text-white">
+      <body className="font-sans antialiased text-[#1A202C] bg-white selection:bg-blue-[#3563E9] selection:text-white">
         {children}
+        <ChatWidget />
       </body>
     </html>
   );

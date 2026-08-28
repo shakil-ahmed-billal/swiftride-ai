@@ -1,21 +1,21 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
+import { AuthUser, setStoredAuthUser, supabase } from "@/lib/supabase";
 import {
-  Mail,
-  Lock,
+  AlertCircle,
+  ArrowRight,
+  Car,
   Eye,
   EyeOff,
-  Car,
-  ShieldCheck,
   Headphones,
-  ArrowRight,
-  AlertCircle,
   Loader2,
+  Lock,
+  Mail,
+  ShieldCheck,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -31,15 +31,36 @@ export default function LoginPage() {
     setErrorMessage("");
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const { data, error } = await supabase.rpc("authenticate_user", {
+        p_email: email,
+        p_password: password,
       });
 
       if (error) {
         setErrorMessage(error.message);
-      } else if (data.session) {
-        window.location.href = "/admin/dashboard";
+        setIsLoading(false);
+        return;
+      }
+
+      const res = data as { success: boolean; error?: string; user?: AuthUser };
+      if (!res.success) {
+        setErrorMessage(res.error || "Invalid email or password.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (res.user) {
+        setStoredAuthUser(res.user);
+        if (
+          res.user.role === "admin" ||
+          res.user.email?.toLowerCase() === "admin@swiftride.com"
+        ) {
+          window.location.href = "/admin/dashboard";
+        } else {
+          window.location.href = "/user/dashboard";
+        }
+      } else {
+        window.location.href = "/user/dashboard";
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -47,7 +68,6 @@ export default function LoginPage() {
       } else {
         setErrorMessage("An unexpected error occurred during log in.");
       }
-    } finally {
       setIsLoading(false);
     }
   };
@@ -70,7 +90,7 @@ export default function LoginPage() {
 
   return (
     <div className="relative w-full min-h-screen lg:h-screen flex flex-col justify-between overflow-x-hidden lg:overflow-hidden bg-[#0B132A]">
-      {/* 1. Full Screen Background Image (login-page-bg.jpg) */}
+      {/* 1. Full Screen Background Image */}
       <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
         <Image
           src="/login-page-bg.jpg"
@@ -84,100 +104,122 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-[#0B132A]/30 lg:hidden z-1" />
       </div>
 
-      {/* 2. Top Header Navigation */}
-      <header className="relative z-20 w-full max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-16 pt-5 sm:pt-6 flex items-center justify-between">
-        {/* Logo & Tagline */}
-        <div className="flex items-center gap-5">
-          <Link href="/" className="text-white font-black text-2xl lg:text-3xl tracking-tight">
-            Logo
-          </Link>
-          <span className="hidden sm:inline-block text-xs font-semibold text-white/80 tracking-wider">
-            Drive • Explore • Belong
-          </span>
-        </div>
+      {/* 2. Main Two-Column Container */}
+      <div className="relative z-20 w-full max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-16 py-6 sm:py-8 lg:py-10 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 h-full">
+        {/* ================= LEFT SIDE DIV ================= */}
+        <div className="lg:col-span-7 xl:col-span-7 flex flex-col justify-between h-full">
+          {/* Top Content: Headline, Subtitle, 3 Value Pillars, Cursive Accent */}
+          <div className="space-y-4 text-white">
+            {/* Main Headline */}
+            <h1 className="font-extrabold text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] tracking-tight leading-[1.12]">
+              Your Journey <br />
+              Starts Here
+            </h1>
 
-        {/* Top Right Auth Switch */}
-        <div className="text-xs sm:text-sm font-medium">
-          <span className="text-slate-600">Don&apos;t have an account? </span>
-          <Link
-            href="/register"
-            className="text-[#3563E9] font-bold hover:underline ml-1"
-          >
-            Register
-          </Link>
-        </div>
-      </header>
+            {/* Subtitle */}
+            <p className="text-white/90 font-normal text-xs sm:text-sm lg:text-base leading-relaxed max-w-[430px]">
+              Rent a car, explore new destinations and create unforgettable
+              memories with complete freedom.
+            </p>
 
-      {/* 3. Main Content Grid */}
-      <main className="relative z-20 w-full max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-16 pt-2 pb-6 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start my-auto">
-        {/* Left Side: Positioned high up, right under the Logo */}
-        <div className="lg:col-span-7 xl:col-span-7 space-y-4 text-white pt-1 lg:pt-3">
-          {/* Main Headline */}
-          <h1 className="font-extrabold text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] tracking-tight leading-[1.12]">
-            Your Journey <br />
-            Starts Here
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-white/90 font-normal text-xs sm:text-sm lg:text-base leading-relaxed max-w-[430px]">
-            Rent a car, explore new destinations and create unforgettable memories with complete freedom.
-          </p>
-
-          {/* 3 Value Pillars */}
-          <div className="space-y-2.5 pt-1">
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-full bg-white/15 backdrop-blur-xs flex items-center justify-center shrink-0">
-                <Car className="w-3.5 h-3.5 text-white" />
+            {/* 3 Value Pillars */}
+            <div className="space-y-2.5 pt-1">
+              <div className="flex items-center gap-3">
+                <div className="w-7 h-7 rounded-full bg-white/15 backdrop-blur-xs flex items-center justify-center shrink-0">
+                  <Car className="w-3.5 h-3.5 text-white" />
+                </div>
+                <span className="text-xs sm:text-sm font-semibold">
+                  Wide Range of Vehicles
+                </span>
               </div>
-              <span className="text-xs sm:text-sm font-semibold">
-                Wide Range of Vehicles
-              </span>
+
+              <div className="flex items-center gap-3">
+                <div className="w-7 h-7 rounded-full bg-white/15 backdrop-blur-xs flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-3.5 h-3.5 text-white" />
+                </div>
+                <span className="text-xs sm:text-sm font-semibold">
+                  Safe & Secure Booking
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-7 h-7 rounded-full bg-white/15 backdrop-blur-xs flex items-center justify-center shrink-0">
+                  <Headphones className="w-3.5 h-3.5 text-white" />
+                </div>
+                <span className="text-xs sm:text-sm font-semibold">
+                  24/7 Customer Support
+                </span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-full bg-white/15 backdrop-blur-xs flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-3.5 h-3.5 text-white" />
+            {/* Handwritten Cursive Accent */}
+            <div className="pt-2 hidden sm:block">
+              <div className="font-caveat text-2xl lg:text-3xl text-white font-bold leading-tight -rotate-2">
+                <div>Drive</div>
+                <div className="text-white/90">A Better Tomorrow</div>
+                <svg
+                  className="w-24 h-2.5 text-white/80 mt-0.5"
+                  viewBox="0 0 100 10"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2 8C30 2 70 2 98 8"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
               </div>
-              <span className="text-xs sm:text-sm font-semibold">
-                Safe & Secure Booking
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-full bg-white/15 backdrop-blur-xs flex items-center justify-center shrink-0">
-                <Headphones className="w-3.5 h-3.5 text-white" />
-              </div>
-              <span className="text-xs sm:text-sm font-semibold">
-                24/7 Customer Support
-              </span>
             </div>
           </div>
 
-          {/* Handwritten Cursive Accent */}
-          <div className="pt-2 hidden sm:block">
-            <div className="font-caveat text-2xl lg:text-3xl text-white font-bold leading-tight -rotate-2">
-              <div>Drive</div>
-              <div className="text-white/90">A Better Tomorrow</div>
-              <svg
-                className="w-24 h-2.5 text-white/80 mt-0.5"
-                viewBox="0 0 100 10"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M2 8C30 2 70 2 98 8"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-              </svg>
+          {/* Bottom Content: 3 Metric Counters */}
+          <div className="pt-8 lg:pt-0 flex items-center gap-8 sm:gap-14 text-white">
+            <div className="space-y-0.5">
+              <div className="text-xl sm:text-2xl font-black tracking-tight leading-none">
+                10K+
+              </div>
+              <div className="text-[10px] sm:text-xs font-semibold text-white/80">
+                Happy Customers
+              </div>
+            </div>
+
+            <div className="border-l border-white/20 pl-8 sm:pl-14 space-y-0.5">
+              <div className="text-xl sm:text-2xl font-black tracking-tight leading-none">
+                100%
+              </div>
+              <div className="text-[10px] sm:text-xs font-semibold text-white/80">
+                Trusted Platform
+              </div>
+            </div>
+
+            <div className="border-l border-white/20 pl-8 sm:pl-14 space-y-0.5 hidden sm:block">
+              <div className="text-xl sm:text-2xl font-black tracking-tight leading-none">
+                50+
+              </div>
+              <div className="text-[10px] sm:text-xs font-semibold text-white/80">
+                Cities Covered
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right Side: Completely Borderless & Transparent Login Form */}
-        <div className="lg:col-span-5 xl:col-span-5 flex justify-end">
-          <div className="w-full max-w-[450px] bg-transparent p-0 sm:p-2 lg:p-3">
+        {/* ================= RIGHT SIDE DIV ================= */}
+        <div className="lg:col-span-5 xl:col-span-5 flex flex-col justify-between items-center lg:items-end h-full">
+          {/* Top Right Auth Switch */}
+          <div className="w-full max-w-[450px] flex justify-end text-xs sm:text-sm font-medium">
+            <span className="text-slate-600">Don&apos;t have an account? </span>
+            <Link
+              href="/register"
+              className="text-[#3563E9] font-bold hover:underline ml-1"
+            >
+              Register
+            </Link>
+          </div>
+
+          {/* Center Form */}
+          <div className="w-full max-w-[450px] bg-transparent p-0 sm:p-2 lg:p-3 my-auto">
             {/* Header / Title */}
             <div className="mb-4">
               <span className="text-[#3563E9] text-xs font-bold tracking-wide block mb-1">
@@ -187,7 +229,8 @@ export default function LoginPage() {
                 Log in to your account
               </h2>
               <p className="text-[#596780] text-xs sm:text-sm font-normal mt-1 leading-relaxed">
-                Access your bookings, manage your rentals and enjoy a seamless experience.
+                Access your bookings, manage your rentals and enjoy a seamless
+                experience.
               </p>
             </div>
 
@@ -240,7 +283,11 @@ export default function LoginPage() {
                     className="absolute right-3.5 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
                     aria-label="Toggle password visibility"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -328,7 +375,10 @@ export default function LoginPage() {
                   onClick={() => handleOAuthSignIn("apple")}
                   className="flex items-center justify-center gap-2 py-2 px-3 bg-white border border-slate-200 rounded-[5px] hover:bg-slate-50 transition-colors text-xs font-semibold text-slate-700 cursor-pointer"
                 >
-                  <svg className="w-4 h-4 fill-current text-slate-900" viewBox="0 0 24 24">
+                  <svg
+                    className="w-4 h-4 fill-current text-slate-900"
+                    viewBox="0 0 24 24"
+                  >
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.38c.62-.75 1.04-1.8 0.93-2.85-.9.04-1.99.6-2.63 1.35-.58.67-.99 1.74-.88 2.76 1.01.08 2.04-.51 2.58-1.26z" />
                   </svg>
                   <span>Apple</span>
@@ -338,44 +388,24 @@ export default function LoginPage() {
               {/* Terms & Privacy */}
               <p className="text-center text-[10px] text-slate-500 pt-1 leading-relaxed">
                 By logging in, you agree to our{" "}
-                <Link href="#" className="text-[#3563E9] font-medium hover:underline">
+                <Link
+                  href="#"
+                  className="text-[#3563E9] font-medium hover:underline"
+                >
                   Terms & Conditions
                 </Link>{" "}
                 and{" "}
-                <Link href="#" className="text-[#3563E9] font-medium hover:underline">
+                <Link
+                  href="#"
+                  className="text-[#3563E9] font-medium hover:underline"
+                >
                   Privacy Policy
                 </Link>
               </p>
             </form>
           </div>
         </div>
-      </main>
-
-      {/* 4. Bottom Metric Counters Bar */}
-      <footer className="relative z-20 w-full max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-16 pb-5 sm:pb-6 flex items-center justify-between text-white">
-        <div className="flex items-center gap-8 sm:gap-14">
-          <div className="space-y-0.5">
-            <div className="text-xl sm:text-2xl font-black tracking-tight leading-none">10K+</div>
-            <div className="text-[10px] sm:text-xs font-semibold text-white/80">
-              Happy Customers
-            </div>
-          </div>
-
-          <div className="border-l border-white/20 pl-8 sm:pl-14 space-y-0.5">
-            <div className="text-xl sm:text-2xl font-black tracking-tight leading-none">100%</div>
-            <div className="text-[10px] sm:text-xs font-semibold text-white/80">
-              Trusted Platform
-            </div>
-          </div>
-
-          <div className="border-l border-white/20 pl-8 sm:pl-14 space-y-0.5 hidden sm:block">
-            <div className="text-xl sm:text-2xl font-black tracking-tight leading-none">50+</div>
-            <div className="text-[10px] sm:text-xs font-semibold text-white/80">
-              Cities Covered
-            </div>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }

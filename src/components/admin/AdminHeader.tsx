@@ -1,20 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import {
+  Bell,
+  Check,
+  ChevronDown,
+  CreditCard,
+  Maximize2,
+  Menu,
+  Moon,
+  Plus,
+  Search,
+  Sun,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Search,
-  Plus,
-  CreditCard,
-  Bell,
-  Moon,
-  Sun,
-  Maximize2,
-  ChevronDown,
-  Menu,
-  Check,
-} from "lucide-react";
+import { useState } from "react";
 
 interface AdminHeaderProps {
   onOpenMobileSidebar: () => void;
@@ -80,7 +80,10 @@ export default function AdminHeader({ onOpenMobileSidebar }: AdminHeaderProps) {
           {isLangOpen && (
             <div className="absolute right-0 mt-1.5 w-40 bg-white border border-slate-200 rounded-[6px] shadow-lg py-1 z-50 text-xs">
               {[
-                { name: "English (US)", flag: "/admin-dashboard/dashboard_15.webp" },
+                {
+                  name: "English (US)",
+                  flag: "/admin-dashboard/dashboard_15.webp",
+                },
                 { name: "German", flag: "/admin-dashboard/dashboard_15.webp" },
                 { name: "French", flag: "/admin-dashboard/dashboard_15.webp" },
                 { name: "Spanish", flag: "/admin-dashboard/dashboard_15.webp" },
@@ -175,15 +178,21 @@ export default function AdminHeader({ onOpenMobileSidebar }: AdminHeaderProps) {
           {isNotifOpen && (
             <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-[6px] shadow-xl p-3 z-50">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <span className="text-xs font-bold text-slate-900">Notifications</span>
+                <span className="text-xs font-bold text-slate-900">
+                  Notifications
+                </span>
                 <span className="text-[10px] font-semibold text-[#FA8231] cursor-pointer hover:underline">
                   Mark all read
                 </span>
               </div>
               <div className="py-2 space-y-1.5">
                 <div className="p-2 rounded-[5px] bg-orange-50/50 hover:bg-orange-50 text-xs">
-                  <p className="font-semibold text-slate-800">New car booking #4166</p>
-                  <p className="text-slate-500 text-[11px]">Range Rover booked</p>
+                  <p className="font-semibold text-slate-800">
+                    New car booking #4166
+                  </p>
+                  <p className="text-slate-500 text-[11px]">
+                    Range Rover booked
+                  </p>
                   <span className="text-[10px] text-slate-400">5 mins ago</span>
                 </div>
               </div>

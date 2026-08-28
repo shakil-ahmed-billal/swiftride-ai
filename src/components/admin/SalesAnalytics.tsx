@@ -28,13 +28,21 @@ export default function SalesAnalytics() {
           .order("month_index", { ascending: true });
 
         if (data && !error && data.length > 0) {
-          setDataPoints(
-            data.map((d) => ({
-              month: d.month,
-              value: parseFloat(d.value),
-              revenue_formatted: d.revenue_formatted,
-            }))
+          // De-duplicate by month name to guarantee only 1 point per month
+          const uniqueByMonth = Array.from(
+            new Map(
+              data.map((d) => [
+                d.month === "July" ? "Jul" : d.month,
+                {
+                  month: d.month === "July" ? "Jul" : d.month,
+                  value: parseFloat(d.value),
+                  revenue_formatted: d.revenue_formatted,
+                },
+              ])
+            ).values()
           );
+
+          setDataPoints(uniqueByMonth);
         } else {
           // Fallback if year has no entries
           setDataPoints([
@@ -44,7 +52,7 @@ export default function SalesAnalytics() {
             { month: "Apr", value: 30, revenue_formatted: "$30,900" },
             { month: "May", value: 55, revenue_formatted: "$55,000" },
             { month: "Jun", value: 42, revenue_formatted: "$42,800" },
-            { month: "July", value: 48, revenue_formatted: "$48,600" },
+            { month: "Jul", value: 48, revenue_formatted: "$48,600" },
             { month: "Aug", value: 35, revenue_formatted: "$35,300" },
             { month: "Sep", value: 58, revenue_formatted: "$58,900" },
           ]);
@@ -156,13 +164,13 @@ export default function SalesAnalytics() {
           </defs>
 
           {/* Gridlines */}
-          {yTicks.map((val) => {
+          {yTicks.map((val, idx) => {
             const y =
               paddingTop +
               chartHeight -
               ((val - minValue) / (maxValue - minValue)) * chartHeight;
             return (
-              <g key={val}>
+              <g key={`ytick-${val}-${idx}`}>
                 <line
                   x1={paddingLeft}
                   y1={y}
@@ -199,11 +207,11 @@ export default function SalesAnalytics() {
           )}
 
           {/* Points */}
-          {points.map((p) => {
+          {points.map((p, index) => {
             const isHovered = hoveredPoint?.month === p.month;
             return (
               <g
-                key={p.month}
+                key={`point-${p.month}-${index}`}
                 className="cursor-pointer"
                 onMouseEnter={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
