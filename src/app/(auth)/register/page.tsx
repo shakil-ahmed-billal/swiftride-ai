@@ -105,7 +105,7 @@ export default function RegisterPage() {
       </div>
 
       {/* 2. Main Container */}
-      <div className="relative z-20 w-full max-w-[1440px] mx-auto px-5 sm:px-12 lg:px-16 py-6 sm:py-8 lg:py-10 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 h-full items-center">
+      <div className="relative z-20 w-full max-w-[1440px] mx-auto px-5 sm:px-12 lg:px-16 py-6 sm:py-8 lg:py-10 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 h-full">
         {/* ================= LEFT SIDE DIV (Hidden on Mobile) ================= */}
         <div className="hidden lg:flex lg:col-span-7 xl:col-span-7 flex-col justify-between h-full">
           {/* Top Content: Headline, Subtitle, 3 Value Pillars, Cursive Accent */}
@@ -206,7 +206,7 @@ export default function RegisterPage() {
         </div>
 
         {/* ================= RIGHT SIDE / MOBILE CENTERED FORM ================= */}
-        <div className="lg:col-span-5 xl:col-span-5 flex flex-col justify-between items-center lg:items-end w-full">
+        <div className="lg:col-span-5 xl:col-span-5 flex flex-col justify-between items-center lg:items-end w-full h-full">
           {/* Mobile Header with Logo & Back to Home */}
           <div className="lg:hidden flex items-center justify-between w-full max-w-[450px] mb-6">
             <Link href="/">
