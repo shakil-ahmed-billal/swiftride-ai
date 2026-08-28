@@ -37,6 +37,7 @@ export async function POST(req: Request) {
     const {
       customer_name,
       customer_email,
+      country,
       car_id,
       car_name,
       car_image,
@@ -59,6 +60,7 @@ export async function POST(req: Request) {
         {
           customer_name,
           customer_email,
+          country: country || "United States",
           car_id: car_id || null,
           car_name,
           car_image: car_image || "/admin-dashboard/dashboard_4.webp",
@@ -81,9 +83,35 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Optionally increment car sales count
-    if (car_id) {
-      await supabase.rpc("increment_car_sales", { car_row_id: car_id });
+    // Increment car sales count in live Supabase cars table
+    const targetCarId = car_id;
+    if (targetCarId) {
+      const { data: carData } = await supabase
+        .from("cars")
+        .select("id, sales_count")
+        .eq("id", targetCarId)
+        .single();
+
+      if (carData) {
+        await supabase
+          .from("cars")
+          .update({ sales_count: (carData.sales_count || 0) + 1 })
+          .eq("id", targetCarId);
+      }
+    } else if (car_name) {
+      const { data: carData } = await supabase
+        .from("cars")
+        .select("id, sales_count")
+        .ilike("name", `%${car_name}%`)
+        .limit(1)
+        .single();
+
+      if (carData) {
+        await supabase
+          .from("cars")
+          .update({ sales_count: (carData.sales_count || 0) + 1 })
+          .eq("id", carData.id);
+      }
     }
 
     return NextResponse.json({ success: true, booking: data });

@@ -117,6 +117,7 @@ CREATE TABLE public.bookings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   customer_name TEXT NOT NULL,
   customer_email TEXT NOT NULL,
+  country TEXT DEFAULT 'United States',
   car_id TEXT REFERENCES public.cars(id),
   car_name TEXT NOT NULL,
   car_image TEXT NOT NULL,

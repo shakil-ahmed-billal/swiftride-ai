@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { Clock } from "lucide-react";
+import { Clock, Calendar } from "lucide-react";
 import { supabase, Booking } from "@/lib/supabase";
 
 export default function RecentTransactions() {
@@ -112,9 +112,25 @@ export default function RecentTransactions() {
                         <div className="font-bold text-[#0B132A] leading-tight">
                           {tx.car_name}
                         </div>
-                        <div className="flex items-center gap-1 text-[11px] text-slate-400">
-                          <Clock className="w-3 h-3" />
-                          <span>{tx.duration || "15 Mins"}</span>
+                        <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mt-0.5">
+                          <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
+                          <span>
+                            {tx.created_at
+                              ? new Date(tx.created_at).toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                })
+                              : tx.start_date
+                              ? new Date(tx.start_date).toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                })
+                              : "Recent"}
+                          </span>
+                          <span className="text-slate-300">•</span>
+                          <span>{tx.duration || "3 Days"}</span>
                         </div>
                       </div>
                     </div>

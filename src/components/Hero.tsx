@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ChevronDown,
   CheckCircle,
@@ -10,19 +10,55 @@ import {
   ShieldCheck,
   Headphones,
   ArrowRight,
+  Search,
 } from "lucide-react";
+import { useCarStore } from "@/store/useCarStore";
 
 export default function Hero() {
-  const [pickupCity, setPickupCity] = useState("Select your city");
-  const [pickupDate, setPickupDate] = useState("");
-  const [pickupTime, setPickupTime] = useState("Select your time");
+  const setSearchFilter = useCarStore((state) => state.setSearchFilter);
 
-  const [dropoffCity, setDropoffCity] = useState("Select your city");
-  const [dropoffDate, setDropoffDate] = useState("");
-  const [dropoffTime, setDropoffTime] = useState("Select your time");
+  const todayStr = new Date().toISOString().split("T")[0];
+  const defaultDropoffStr = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+
+  const [pickupCity, setPickupCity] = useState("London, UK");
+  const [pickupDate, setPickupDate] = useState(todayStr);
+  const [pickupTime, setPickupTime] = useState("09:00 AM");
+
+  const [dropoffCity, setDropoffCity] = useState("London, UK");
+  const [dropoffDate, setDropoffDate] = useState(defaultDropoffStr);
+  const [dropoffTime, setDropoffTime] = useState("06:00 PM");
 
   const cities = ["London, UK", "Manchester, UK", "Birmingham, UK", "Leeds, UK", "Liverpool, UK"];
   const times = ["09:00 AM", "12:00 PM", "03:00 PM", "06:00 PM", "09:00 PM"];
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    let days = 3;
+    if (pickupDate && dropoffDate) {
+      const p = new Date(pickupDate).getTime();
+      const d = new Date(dropoffDate).getTime();
+      if (d > p) {
+        days = Math.max(1, Math.round((d - p) / (1000 * 60 * 60 * 24)));
+      }
+    }
+
+    setSearchFilter({
+      pickupCity: pickupCity === "Select your city" ? "London, UK" : pickupCity,
+      pickupDate,
+      pickupTime,
+      dropoffCity: dropoffCity === "Select your city" ? "London, UK" : dropoffCity,
+      dropoffDate,
+      dropoffTime,
+      rentalDays: days,
+      isFilterActive: true,
+    });
+
+    const target = document.getElementById("rental-details");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <section
@@ -177,7 +213,10 @@ export default function Hero() {
 
       {/* 5. Original Bottom Filter/Search Bar: 50% in Hero & 50% in section below */}
       <div className="w-full absolute bottom-0 left-0 right-0 translate-y-1/2 z-30 px-4 sm:px-8">
-        <div className="max-w-[1360px] mx-auto bg-white rounded-[10px] p-5 sm:p-6 shadow-[0px_10px_30px_rgba(0,0,0,0.1)] border border-slate-100">
+        <form
+          onSubmit={handleSearchSubmit}
+          className="max-w-[1360px] mx-auto bg-white rounded-[10px] p-5 sm:p-6 shadow-[0px_10px_30px_rgba(0,0,0,0.1)] border border-slate-100"
+        >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
             {/* Pick - Up Group */}
             <div className="lg:col-span-5 space-y-3">
@@ -215,6 +254,7 @@ export default function Hero() {
                   <div className="flex items-center justify-between text-xs text-[#596780] cursor-pointer">
                     <input
                       type="date"
+                      min={todayStr}
                       value={pickupDate}
                       onChange={(e) => setPickupDate(e.target.value)}
                       className="w-full bg-transparent focus:outline-none cursor-pointer font-medium text-xs text-[#1A202C]"
@@ -280,6 +320,7 @@ export default function Hero() {
                   <div className="flex items-center justify-between text-xs text-[#596780] cursor-pointer">
                     <input
                       type="date"
+                      min={pickupDate || todayStr}
                       value={dropoffDate}
                       onChange={(e) => setDropoffDate(e.target.value)}
                       className="w-full bg-transparent focus:outline-none cursor-pointer font-medium text-xs text-[#1A202C]"
@@ -311,15 +352,15 @@ export default function Hero() {
 
             {/* Search Button */}
             <div className="lg:col-span-2 flex justify-end">
-              <Link
-                href="#rental-details"
-                className="w-full lg:w-[110px] h-[44px] bg-[#3563E9] hover:bg-[#254EDB] text-white font-semibold text-base rounded-[10px] shadow flex items-center justify-center transition-all cursor-pointer"
+              <button
+                type="submit"
+                className="w-full lg:w-[110px] h-[44px] bg-[#3563E9] hover:bg-[#254EDB] text-white font-semibold text-base rounded-[10px] shadow flex items-center justify-center transition-all cursor-pointer active:scale-95"
               >
                 Search
-              </Link>
+              </button>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </section>
   );

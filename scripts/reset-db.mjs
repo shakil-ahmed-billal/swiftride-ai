@@ -25,24 +25,21 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("❌ Error: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be in .env.local");
+  console.error("Error: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY must be in .env.local");
   process.exit(1);
 }
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 async function resetDatabase() {
-  console.log("🧹 Resetting Supabase database tables...");
+  console.log("Resetting Supabase database tables...");
 
-  // 1. Delete records
+  // Delete live records
   await supabase.from("bookings").delete().neq("id", "00000000-0000-0000-0000-000000000000");
   await supabase.from("cars").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-  await supabase.from("country_sales").delete().neq("id", "none");
-  await supabase.from("monthly_analytics").delete().neq("id", -1);
-  await supabase.from("dashboard_metrics").delete().neq("id", "none");
 
-  console.log("✅ All tables cleared!");
-  console.log("🔄 Re-seeding clean data...");
+  console.log("All active tables cleared!");
+  console.log("Re-seeding clean data...");
 
   // Call seed script
   await import("./seed.mjs");

@@ -104,6 +104,7 @@ export default function ChatWidget() {
   const [bookName, setBookName] = useState("");
   const [bookEmail, setBookEmail] = useState("");
   const [bookPhone, setBookPhone] = useState("");
+  const [bookCountry, setBookCountry] = useState("United States");
   const [bookDays, setBookDays] = useState(3);
   const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -193,6 +194,7 @@ export default function ChatWidget() {
         {
           customer_name: cleanName,
           customer_email: cleanEmail,
+          country: bookCountry || "United States",
           car_id: selectedCarForBooking.id,
           car_name: selectedCarForBooking.name,
           car_image: selectedCarForBooking.image,
@@ -204,6 +206,20 @@ export default function ChatWidget() {
         },
       ]);
 
+      // Increment sales_count in live Supabase cars table
+      const { data: carData } = await supabase
+        .from("cars")
+        .select("sales_count")
+        .eq("id", selectedCarForBooking.id)
+        .single();
+
+      if (carData) {
+        await supabase
+          .from("cars")
+          .update({ sales_count: (carData.sales_count || 0) + 1 })
+          .eq("id", selectedCarForBooking.id);
+      }
+
       // 2. Also send chat notification
       await fetch("/api/ai/chat", {
         method: "POST",
@@ -214,7 +230,7 @@ export default function ChatWidget() {
       });
 
       addMessage(
-        `🎉 **Reservation Confirmed!**\n\nThank you **${cleanName}**! Your booking request for **${selectedCarForBooking.name}** (${bookDays} Days — $${totalCost}) has been saved. Our sales concierge will call **${bookPhone}** shortly!`,
+        `**Reservation Confirmed**\n\nThank you **${cleanName}**! Your booking request for **${selectedCarForBooking.name}** (${bookDays} Days — $${totalCost}) has been registered in our system. Our sales concierge will contact **${bookPhone}** shortly!`,
         "ai",
       );
       setSelectedCarForBooking(null);
@@ -440,6 +456,45 @@ export default function ChatWidget() {
                         onChange={(e) => setBookPhone(e.target.value)}
                         className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[5px] text-xs focus:bg-white focus:outline-none focus:border-[#3563E9]"
                       />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-700 mb-0.5">
+                        Country
+                      </label>
+                      <select
+                        value={bookCountry}
+                        onChange={(e) => setBookCountry(e.target.value)}
+                        className="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-[5px] text-xs focus:bg-white focus:outline-none focus:border-[#3563E9] cursor-pointer"
+                      >
+                        <option value="United States">United States</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Brazil">Brazil</option>
+                        <option value="China">China</option>
+                        <option value="Germany">Germany</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Australia">Australia</option>
+                        <option value="France">France</option>
+                        <option value="United Arab Emirates">UAE</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-700 mb-0.5">
+                        Rental Duration
+                      </label>
+                      <select
+                        value={bookDays}
+                        onChange={(e) => setBookDays(Number(e.target.value))}
+                        className="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-[5px] text-xs focus:bg-white focus:outline-none focus:border-[#3563E9] cursor-pointer"
+                      >
+                        {[1, 2, 3, 4, 5, 7, 10, 14, 30].map((d) => (
+                          <option key={d} value={d}>
+                            {d} {d === 1 ? "Day" : "Days"}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 

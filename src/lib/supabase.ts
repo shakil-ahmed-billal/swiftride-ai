@@ -70,6 +70,7 @@ export type Booking = {
   user_id?: string;
   customer_name: string;
   customer_email: string;
+  country?: string;
   car_id: string;
   car_name: string;
   car_image: string;
@@ -81,23 +82,4 @@ export type Booking = {
   transaction_id: string;
   status: "Success" | "Cancelled" | "Pending";
   created_at: string;
-};
-
-export type DashboardMetric = {
-  id: string;
-  metric_name: string;
-  metric_value: string;
-  trend_percentage: string;
-  trend_type: "increase" | "decrease";
-  updated_at: string;
-};
-
-export type CountrySale = {
-  id: string;
-  country_code: string;
-  country_name: string;
-  sales_count: number;
-  revenue: number;
-  growth_percentage: number;
-  updated_at: string;
 };
