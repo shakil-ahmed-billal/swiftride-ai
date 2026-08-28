@@ -1,11 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { Heart, Fuel, Gauge, Users, Check, X, CarIcon, Calendar, MapPin } from "lucide-react";
-import { supabase, Car, getStoredAuthUser } from "@/lib/supabase";
-import Link from "next/link";
+import { Car, getStoredAuthUser, supabase } from "@/lib/supabase";
 import { useCarStore } from "@/store/useCarStore";
+import {
+  ArrowRight,
+  Calendar,
+  CarIcon,
+  Check,
+  Fuel,
+  Gauge,
+  Heart,
+  MapPin,
+  Users,
+  X,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function PopularCars() {
   const { searchFilter, clearSearchFilter } = useCarStore();
@@ -146,21 +157,30 @@ export default function PopularCars() {
   const filteredCars = cars.filter((car) => {
     if (activeTab === "Popular") return true;
     if (activeTab === "Large Car") return car.type === "SUV" || car.seats >= 7;
-    if (activeTab === "Small Car") return car.type === "Sedan" || car.type === "Hatchback";
-    if (activeTab === "Exclusive Car") return car.price_per_day >= 150 || car.type === "Sports" || car.type === "Electric";
+    if (activeTab === "Small Car")
+      return car.type === "Sedan" || car.type === "Hatchback";
+    if (activeTab === "Exclusive Car")
+      return (
+        car.price_per_day >= 150 ||
+        car.type === "Sports" ||
+        car.type === "Electric"
+      );
     return true;
   });
 
   return (
-    <section id="rental-details" className="w-full bg-[#F6F7F9] py-20 px-6 md:px-16">
+    <section
+      id="rental-details"
+      className="w-full bg-[#F6F7F9] py-12 sm:py-16 md:py-20 px-4 sm:px-8 md:px-16"
+    >
       <div className="max-w-[1440px] mx-auto">
         {/* Consistent Section Heading */}
-        <div className="text-center mb-10">
-          <h2 className="text-[#0B132A] font-bold text-2xl sm:text-3xl md:text-4xl tracking-tight leading-tight mb-3 sm:mb-4">
+        <div className="text-center mb-8 sm:mb-10">
+          <h2 className="text-[#0B132A] font-bold text-2xl sm:text-3xl md:text-4xl tracking-tight leading-tight mb-2 sm:mb-3">
             Most popular car rental deals
           </h2>
-          <p className="text-[#596780] font-normal text-sm sm:text-base md:text-lg max-w-[540px] mx-auto leading-relaxed">
-            A high-performing web-based car rental system powered by live Supabase PostgreSQL backend.
+          <p className="text-[#596780] font-normal text-xs sm:text-base md:text-lg max-w-[540px] mx-auto leading-relaxed">
+            Find the right car for your next trip
           </p>
         </div>
 
@@ -173,15 +193,24 @@ export default function PopularCars() {
               </div>
               <div className="text-left">
                 <p className="text-xs sm:text-sm font-bold text-[#0B132A]">
-                  Active Rental Query: <span className="text-[#3563E9]">{searchFilter.pickupCity}</span>
+                  Active Rental Query:{" "}
+                  <span className="text-[#3563E9]">
+                    {searchFilter.pickupCity}
+                  </span>
                   {searchFilter.dropoffCity !== searchFilter.pickupCity && (
-                    <span className="text-slate-500 font-normal"> → {searchFilter.dropoffCity}</span>
+                    <span className="text-slate-500 font-normal">
+                      {" "}
+                      → {searchFilter.dropoffCity}
+                    </span>
                   )}
                 </p>
                 <p className="text-[11px] sm:text-xs text-[#596780] flex items-center gap-1.5 flex-wrap mt-0.5">
                   <Calendar className="w-3 h-3 text-[#3563E9]" />
                   <span>
-                    {searchFilter.pickupDate || "Today"} ({searchFilter.pickupTime}) to {searchFilter.dropoffDate || "3 Days"} ({searchFilter.dropoffTime})
+                    {searchFilter.pickupDate || "Today"} (
+                    {searchFilter.pickupTime}) to{" "}
+                    {searchFilter.dropoffDate || "3 Days"} (
+                    {searchFilter.dropoffTime})
                   </span>
                   <span className="text-slate-300">•</span>
                   <span className="font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-[4px] border border-emerald-200/60">
@@ -203,76 +232,88 @@ export default function PopularCars() {
         )}
 
         {/* Category Tabs */}
-        <div className="w-full border-b border-slate-200 mb-12">
-          <div className="w-full grid grid-cols-2 md:grid-cols-4 text-center">
+        <div className="w-full border-b border-slate-200 mb-8 sm:mb-12">
+          <div className="w-full grid grid-cols-4 text-center">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`py-3.5 text-base sm:text-lg md:text-[20px] font-semibold tracking-tight transition-all cursor-pointer relative flex items-center justify-center ${
+                className={`py-2 sm:py-3.5 text-xs sm:text-base md:text-[20px] font-semibold tracking-tight transition-all cursor-pointer relative flex items-center justify-center ${
                   activeTab === tab
                     ? "text-[#3563E9] after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:bg-[#3563E9]"
                     : "text-[#596780] hover:text-[#0B132A]"
                 }`}
               >
-                {tab}
+                {tab === "Exclusive Car" ? (
+                  <>
+                    <span className="hidden sm:inline">Exclusive Car</span>
+                    <span className="sm:hidden">Exclusive</span>
+                  </>
+                ) : (
+                  tab
+                )}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Cars Grid - 3 cars per row with wireframe rounded-[10px] */}
+        {/* Cars Grid - 2 columns on mobile with large prominent vehicle visuals, 3 on desktop */}
         {isLoading ? (
-          <div className="py-24 text-center text-slate-500 font-medium">
+          <div className="py-20 text-center text-slate-500 font-medium">
             Loading live fleet data from Supabase...
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
             {filteredCars.map((car) => {
               const isFav = favorites.includes(car.id);
               return (
                 <div
                   key={car.id}
-                  className="bg-white rounded-[10px] p-6 sm:p-7 flex flex-col justify-between min-h-[460px] sm:min-h-[480px] border border-slate-200/80 shadow-[0px_4px_25px_0px_rgba(0,0,0,0.03)] hover:shadow-lg transition-all duration-300 relative group"
+                  onClick={() => setSelectedCar(car)}
+                  className="bg-white rounded-[10px] p-3 sm:p-6 lg:p-7 flex flex-col justify-between h-auto sm:min-h-[440px] lg:min-h-[480px] border border-slate-200/80 shadow-[0px_3px_14px_0px_rgba(0,0,0,0.03)] hover:shadow-lg transition-all duration-300 relative group cursor-pointer"
                 >
                   {/* Top: Title & Favorite Heart */}
                   <div>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-bold text-xl sm:text-2xl text-[#0B132A] tracking-tight truncate max-w-[260px]">
+                    <div className="flex items-start justify-between gap-1">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-bold text-xs sm:text-xl lg:text-2xl text-[#0B132A] tracking-tight truncate leading-tight">
                           {car.name}
                         </h3>
-                        <span className="text-xs sm:text-sm font-semibold text-[#596780]">
+                        <span className="text-[10px] sm:text-sm font-semibold text-[#596780] truncate block mt-0.5">
                           {car.brand} • {car.type}
                         </span>
                       </div>
                       <button
-                        onClick={() => toggleFavorite(car.id)}
-                        className="p-1.5 text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(car.id);
+                        }}
+                        className="p-1 text-slate-400 hover:text-red-500 transition-colors cursor-pointer shrink-0 rounded-[5px]"
                         aria-label="Add to favorites"
                       >
                         <Heart
-                          className={`w-5 h-5 ${isFav ? "fill-red-500 text-red-500" : "stroke-current"}`}
+                          className={`w-3.5 h-3.5 sm:w-5 sm:h-5 ${isFav ? "fill-red-500 text-red-500" : "stroke-current"}`}
                         />
                       </button>
                     </div>
 
-                    {/* Middle: Prominent BIG Car Image */}
-                    <div className="w-full h-52 sm:h-60 my-2 flex items-center justify-center relative">
+                    {/* Middle: Large Prominent Car Image filling card width */}
+                    <div className="w-full h-22 sm:h-48 lg:h-56 my-1 sm:my-3 flex items-center justify-center relative">
                       <Image
                         src={car.image}
                         alt={car.name}
                         width={460}
                         height={260}
-                        className="object-contain max-h-48 sm:max-h-56 w-full drop-shadow-xs group-hover:scale-105 transition-transform duration-300"
+                        className="object-contain w-full h-full max-h-20 sm:max-h-44 lg:max-h-52 drop-shadow-xs group-hover:scale-105 transition-transform duration-300 scale-105"
                         unoptimized={car.image.startsWith("http")}
                       />
                     </div>
                   </div>
 
                   {/* Bottom Group: Specs & Price Footer */}
-                  <div className="space-y-4 pt-2">
-                    <div className="flex items-center justify-between w-full text-xs sm:text-sm text-[#596780] font-medium px-1">
+                  <div className="space-y-1.5 sm:space-y-4 pt-1 sm:pt-2">
+                    {/* Desktop Specs (Fuel, Transmission, Seats) */}
+                    <div className="hidden sm:flex items-center justify-between w-full text-xs sm:text-sm text-[#596780] font-medium px-1">
                       <div className="flex items-center gap-1.5">
                         <Fuel className="w-4 h-4 text-[#3563E9]" />
                         <span>{car.fuel_type || "Octane"}</span>
@@ -288,18 +329,21 @@ export default function PopularCars() {
                     </div>
 
                     {/* Price and Rent Now Action */}
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                    <div className="flex items-center justify-between pt-1.5 sm:pt-4 border-t border-slate-100">
                       <div>
-                        <span className="font-bold text-2xl sm:text-3xl text-[#0B132A]">
+                        <span className="font-extrabold text-sm sm:text-2xl lg:text-3xl text-[#0B132A]">
                           ${car.price_per_day}
                         </span>
-                        <span className="text-xs sm:text-sm font-normal text-[#596780]">
+                        <span className="text-[10px] sm:text-sm font-normal text-[#596780]">
                           /day
                         </span>
                       </div>
                       <button
-                        onClick={() => setSelectedCar(car)}
-                        className="w-[120px] sm:w-[130px] h-10 sm:h-11 bg-[#3563E9] hover:bg-[#254EDB] text-white font-semibold text-sm rounded-[5px] flex items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedCar(car);
+                        }}
+                        className="hidden sm:flex w-[120px] sm:w-[130px] h-10 sm:h-11 bg-[#3563E9] hover:bg-[#254EDB] text-white font-semibold text-sm rounded-[5px] items-center justify-center transition-all shadow-xs cursor-pointer active:scale-95"
                       >
                         Rent Now
                       </button>
@@ -311,16 +355,15 @@ export default function PopularCars() {
           </div>
         )}
 
-        {/* Bottom Button */}
-        <div className="flex items-center justify-between mt-14 pt-4">
-          <div className="mx-auto flex items-center gap-6">
-            <button
-              type="button"
-              className="px-8 py-3 bg-[#3563E9] text-white font-semibold text-sm rounded-[5px] shadow-sm hover:bg-[#254EDB] transition-all hover:scale-105 active:scale-95 cursor-pointer"
-            >
-              Show more car
-            </button>
-          </div>
+        {/* Bottom CTA Button */}
+        <div className="flex items-center justify-center mt-8 sm:mt-12 pt-2">
+          <button
+            type="button"
+            className="w-full sm:w-auto px-8 py-3 bg-[#3563E9] text-white font-bold text-xs sm:text-sm rounded-[5px] shadow-sm hover:bg-[#254EDB] transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+          >
+            <span>Show More Cars</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
@@ -384,11 +427,15 @@ export default function PopularCars() {
                   <div className="p-4 bg-slate-50 border border-slate-200 rounded-[8px] text-xs text-left space-y-1.5 mt-4">
                     <div className="flex justify-between">
                       <span className="text-slate-500">Vehicle:</span>
-                      <span className="font-bold text-[#0B132A]">{selectedCar.name}</span>
+                      <span className="font-bold text-[#0B132A]">
+                        {selectedCar.name}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-500">Duration:</span>
-                      <span className="font-semibold text-slate-700">{rentalDays} Days</span>
+                      <span className="font-semibold text-slate-700">
+                        {rentalDays} Days
+                      </span>
                     </div>
                     <div className="flex justify-between pt-1 border-t border-slate-200 font-bold text-sm">
                       <span className="text-[#0B132A]">Total Amount:</span>
@@ -416,7 +463,11 @@ export default function PopularCars() {
                   </div>
                 </div>
               ) : (
-                <form id="drawer-booking-form" onSubmit={handleBookingSubmit} className="space-y-5">
+                <form
+                  id="drawer-booking-form"
+                  onSubmit={handleBookingSubmit}
+                  className="space-y-5"
+                >
                   {/* Vehicle Spotlight Card */}
                   <div className="bg-[#F6F7F9] border border-slate-200 rounded-[10px] p-4 text-center relative overflow-hidden">
                     <span className="absolute top-3 left-3 px-2 py-0.5 bg-[#3563E9] text-white text-[10px] font-bold rounded-[4px]">
@@ -535,17 +586,27 @@ export default function PopularCars() {
                         <div className="flex items-center gap-1.5 text-slate-700">
                           <MapPin className="w-3.5 h-3.5 text-[#3563E9] shrink-0" />
                           <span className="font-semibold">Route:</span>
-                          <span>{searchFilter.pickupCity} → {searchFilter.dropoffCity}</span>
+                          <span>
+                            {searchFilter.pickupCity} →{" "}
+                            {searchFilter.dropoffCity}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
                           <Calendar className="w-3 h-3 text-[#3563E9] shrink-0" />
-                          <span>{searchFilter.pickupDate || "Today"} ({searchFilter.pickupTime}) to {searchFilter.dropoffDate || "3 Days"} ({searchFilter.dropoffTime})</span>
+                          <span>
+                            {searchFilter.pickupDate || "Today"} (
+                            {searchFilter.pickupTime}) to{" "}
+                            {searchFilter.dropoffDate || "3 Days"} (
+                            {searchFilter.dropoffTime})
+                          </span>
                         </div>
                       </div>
                     )}
                     <div className="flex justify-between text-xs text-slate-600">
                       <span>Daily Rate:</span>
-                      <span className="font-semibold">${selectedCar.price_per_day}.00</span>
+                      <span className="font-semibold">
+                        ${selectedCar.price_per_day}.00
+                      </span>
                     </div>
                     <div className="flex justify-between text-xs text-slate-600">
                       <span>Duration:</span>

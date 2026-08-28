@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   X,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -121,9 +122,16 @@ export default function Navbar() {
         {/* Brand Logo */}
         <Link
           href="/"
-          className="text-white font-bold text-2xl lg:text-3xl tracking-tight"
+          className="flex items-center gap-2 py-1"
         >
-          Logo
+          <Image
+            src="/white-logo.png"
+            alt="SwiftRide AI"
+            width={200}
+            height={48}
+            className="h-7 sm:h-9 lg:h-11 w-auto object-contain"
+            priority
+          />
         </Link>
 
         {/* Desktop Navigation Links */}

@@ -50,9 +50,14 @@ export default function UserHeader({
       <div className="flex items-center gap-3 flex-1 max-w-xl">
         {/* Brand Logo */}
         <Link href="/" className="hidden lg:flex items-center gap-2 pr-3 border-r border-slate-200 shrink-0">
-          <span className="font-extrabold text-xl text-[#0B132A] tracking-tight">
-            Swift<span className="text-[#3563E9]">Ride</span>
-          </span>
+          <Image
+            src="/color-logo.png"
+            alt="SwiftRide"
+            width={150}
+            height={42}
+            className="h-9 sm:h-10 w-auto object-contain"
+            priority
+          />
           <span className="px-1.5 py-0.5 bg-blue-50 text-[#3563E9] text-[9px] font-bold rounded-[3px] border border-blue-100">
             User
           </span>

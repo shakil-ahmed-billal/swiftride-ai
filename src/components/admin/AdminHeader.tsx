@@ -5,27 +5,130 @@ import {
   Check,
   ChevronDown,
   CreditCard,
+  Home,
+  LogOut,
   Maximize2,
   Menu,
   Moon,
   Plus,
   Search,
+  ShieldCheck,
   Sun,
+  User,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  AuthUser,
+  getStoredAuthUser,
+  setStoredAuthUser,
+  supabase,
+} from "@/lib/supabase";
 
 interface AdminHeaderProps {
   onOpenMobileSidebar: () => void;
 }
 
 export default function AdminHeader({ onOpenMobileSidebar }: AdminHeaderProps) {
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState("English (US)");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkUser = () => {
+      const stored = getStoredAuthUser();
+      if (stored) {
+        setUser(stored);
+      } else {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session?.user) {
+            setUser({
+              id: session.user.id,
+              email: session.user.email || "",
+              full_name:
+                session.user.user_metadata?.full_name ||
+                session.user.email?.split("@")[0] ||
+                "Admin",
+              role:
+                session.user.email?.toLowerCase() === "admin@swiftride.com"
+                  ? "admin"
+                  : "user",
+            });
+          } else {
+            setUser({
+              id: "admin-default",
+              email: "admin@swiftride.com",
+              full_name: "Mike Witzel",
+              role: "admin",
+            });
+          }
+        });
+      }
+    };
+
+    checkUser();
+
+    const onAuthChanged = () => checkUser();
+    window.addEventListener("swiftride-auth-changed", onAuthChanged);
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email || "",
+          full_name:
+            session.user.user_metadata?.full_name ||
+            session.user.email?.split("@")[0] ||
+            "Admin",
+          role:
+            session.user.email?.toLowerCase() === "admin@swiftride.com"
+              ? "admin"
+              : "user",
+        });
+      } else {
+        checkUser();
+      }
+    });
+
+    return () => {
+      window.removeEventListener("swiftride-auth-changed", onAuthChanged);
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    setStoredAuthUser(null);
+    await supabase.auth.signOut();
+    setIsProfileOpen(false);
+    window.location.href = "/";
+  };
+
+  const displayName = user?.full_name || user?.email?.split("@")[0] || "Admin";
+  const displayEmail = user?.email || "admin@swiftride.com";
+  const userInitial = displayName.charAt(0).toUpperCase();
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 flex items-center justify-between gap-4">
@@ -115,23 +218,24 @@ export default function AdminHeader({ onOpenMobileSidebar }: AdminHeaderProps) {
           )}
         </div>
 
-        {/* 1st Action Button: Yellow / Orange (#FF9F43 matching map) */}
-        <button
-          type="button"
+        {/* 1st Action Button: Yellow / Orange (#FF9F43) */}
+        <Link
+          href="/#rental-details"
           className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#FF9F43] hover:bg-[#E08A33] text-white text-xs font-semibold rounded-[5px] shadow-xs transition-all active:scale-95 cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>Add New</span>
-        </button>
+          <span className="hidden sm:inline">Add Booking</span>
+          <span className="sm:hidden">Add</span>
+        </Link>
 
-        {/* 2nd Action Button: Dark Navy Blue (#092C4C matching map) */}
-        <button
-          type="button"
+        {/* 2nd Action Button: Dark Navy Blue (#092C4C) */}
+        <Link
+          href="/"
           className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#092C4C] hover:bg-[#143E6B] text-white text-xs font-semibold rounded-[5px] shadow-xs transition-all active:scale-95 cursor-pointer"
         >
-          <CreditCard className="w-3.5 h-3.5 text-[#FF9F43]" />
-          <span>POS</span>
-        </button>
+          <Home className="w-3.5 h-3.5 text-[#FF9F43]" />
+          <span className="hidden sm:inline">Main Site</span>
+        </Link>
 
         <div className="hidden sm:block h-5 w-px bg-slate-200 my-auto" />
 
@@ -188,35 +292,30 @@ export default function AdminHeader({ onOpenMobileSidebar }: AdminHeaderProps) {
               <div className="py-2 space-y-1.5">
                 <div className="p-2 rounded-[5px] bg-orange-50/50 hover:bg-orange-50 text-xs">
                   <p className="font-semibold text-slate-800">
-                    New car booking #4166
+                    Live Supabase Bookings Active
                   </p>
                   <p className="text-slate-500 text-[11px]">
-                    Range Rover booked
+                    Real-time fleet tracking enabled
                   </p>
-                  <span className="text-[10px] text-slate-400">5 mins ago</span>
+                  <span className="text-[10px] text-slate-400">Just now</span>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* User Profile Pill */}
-        <div className="relative ml-0.5">
+        {/* Real User Profile Pill & Dropdown */}
+        <div className="relative ml-0.5" ref={profileRef}>
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex items-center gap-2 p-1 sm:pr-2 rounded-[5px] hover:bg-slate-100 transition-colors"
+            className="flex items-center gap-2 p-1 sm:pr-2.5 rounded-[6px] hover:bg-slate-100 transition-colors cursor-pointer"
           >
-            <div className="relative w-7 h-7 rounded-full overflow-hidden ring-1 ring-slate-200 shrink-0">
-              <Image
-                src="/admin-dashboard/dashboard_16.webp"
-                alt="Mike Witzel"
-                fill
-                className="object-cover"
-              />
+            <div className="w-7 h-7 rounded-full bg-[#FA8231] text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs">
+              {userInitial}
             </div>
-            <div className="hidden sm:flex flex-col text-left">
-              <span className="text-xs font-bold text-[#0B132A] leading-tight">
-                Mike Witzel
+            <div className="hidden sm:flex flex-col text-left max-w-[120px]">
+              <span className="text-xs font-bold text-[#0B132A] leading-tight truncate">
+                {displayName}
               </span>
               <span className="text-[10px] font-medium text-slate-500 leading-tight">
                 Super Admin
@@ -226,26 +325,61 @@ export default function AdminHeader({ onOpenMobileSidebar }: AdminHeaderProps) {
           </button>
 
           {isProfileOpen && (
-            <div className="absolute right-0 mt-1.5 w-44 bg-white border border-slate-200 rounded-[6px] shadow-xl py-1 z-50 text-xs">
-              <div className="px-3 py-1.5 border-b border-slate-100 sm:hidden">
-                <p className="font-bold text-slate-900">Mike Witzel</p>
-                <p className="text-[11px] text-slate-500">Super Admin</p>
+            <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200/90 rounded-[10px] shadow-2xl py-2 z-50 animate-in fade-in slide-in-from-top-2 text-[#0B132A]">
+              {/* Profile Card Header */}
+              <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#FA8231] text-white font-bold text-base flex items-center justify-center shrink-0 shadow-xs">
+                  {userInitial}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-[#0B132A] truncate leading-tight">
+                    {displayName}
+                  </p>
+                  <p className="text-xs text-[#596780] truncate mt-0.5">
+                    {displayEmail}
+                  </p>
+                  <div className="mt-1.5 flex items-center gap-1">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-50 text-[#FA8231] border border-orange-200/80 rounded-[4px] text-[10px] font-bold">
+                      <ShieldCheck className="w-3 h-3 text-[#FA8231]" />
+                      <span>Administrator</span>
+                    </span>
+                  </div>
+                </div>
               </div>
-              <Link
-                href="/admin/dashboard"
-                onClick={() => setIsProfileOpen(false)}
-                className="block px-3 py-1.5 text-slate-700 hover:bg-slate-50 transition-colors"
-              >
-                Profile Settings
-              </Link>
+
+              {/* Navigation Options */}
+              <div className="py-1">
+                <Link
+                  href="/admin/dashboard"
+                  onClick={() => setIsProfileOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 hover:text-[#FA8231] hover:bg-orange-50/60 transition-colors"
+                >
+                  <User className="w-4 h-4 text-slate-400" />
+                  <span>Admin Dashboard</span>
+                </Link>
+
+                <Link
+                  href="/"
+                  onClick={() => setIsProfileOpen(false)}
+                  className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 hover:text-[#FA8231] hover:bg-orange-50/60 transition-colors"
+                >
+                  <Home className="w-4 h-4 text-slate-400" />
+                  <span>Return to Website</span>
+                </Link>
+              </div>
+
+              {/* Divider */}
               <div className="my-1 border-t border-slate-100" />
-              <Link
-                href="/"
-                onClick={() => setIsProfileOpen(false)}
-                className="block px-3 py-1.5 text-red-600 hover:bg-red-50 transition-colors font-medium"
+
+              {/* Sign Out Button */}
+              <button
+                onClick={handleSignOut}
+                type="button"
+                className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors text-left cursor-pointer"
               >
-                Sign Out
-              </Link>
+                <LogOut className="w-4 h-4 text-red-500" />
+                <span>Sign Out</span>
+              </button>
             </div>
           )}
         </div>

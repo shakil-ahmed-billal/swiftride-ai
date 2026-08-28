@@ -63,6 +63,9 @@ export default function StatCards() {
   useEffect(() => {
     loadRealMetrics();
 
+    const onAuthChanged = () => loadRealMetrics();
+    window.addEventListener("swiftride-auth-changed", onAuthChanged);
+
     // Subscribe to realtime changes on bookings table
     const subscription = supabase
       .channel("admin-stats-realtime")
@@ -76,6 +79,7 @@ export default function StatCards() {
       .subscribe();
 
     return () => {
+      window.removeEventListener("swiftride-auth-changed", onAuthChanged);
       supabase.removeChannel(subscription);
     };
   }, []);

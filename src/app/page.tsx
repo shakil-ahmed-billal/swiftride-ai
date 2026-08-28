@@ -6,6 +6,7 @@ import WhyChooseUs from "@/components/WhyChooseUs";
 import PromoBanners from "@/components/PromoBanners";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 export default function Home() {
   return (
@@ -36,6 +37,9 @@ export default function Home() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Native App-Style Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 }

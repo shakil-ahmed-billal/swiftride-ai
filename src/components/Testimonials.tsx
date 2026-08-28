@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import Image from "next/image";
-import { Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -15,7 +15,8 @@ export default function Testimonials() {
       rating: 4.5,
       comment:
         "“Wow... I am very happy to use this service, it turned out to be more than my expectations and so far there have been no problems. SwiftRide always the best”.",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      avatar:
+        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
     },
     {
       id: 2,
@@ -24,7 +25,8 @@ export default function Testimonials() {
       rating: 4.8,
       comment:
         "“I like it because I like to travel far and still can rent a comfortable car seamlessly. The process was super smooth and reliable”.",
-      avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80",
+      avatar:
+        "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80",
     },
     {
       id: 3,
@@ -33,7 +35,8 @@ export default function Testimonials() {
       rating: 4.5,
       comment:
         "“This is very unusual for my business that requires high mobility and fast car rentals. Customer support is always responsive and helpful”.",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      avatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
     },
   ];
 
@@ -46,33 +49,36 @@ export default function Testimonials() {
   };
 
   return (
-    <section id="testimonials" className="w-full bg-white py-20 px-6 md:px-16 overflow-hidden">
+    <section
+      id="testimonials"
+      className="w-full bg-white py-12 sm:py-16 md:py-20 px-5 sm:px-8 md:px-16 overflow-hidden"
+    >
       <div className="max-w-[1440px] mx-auto">
         {/* Consistent Section Heading */}
-        <div className="text-center mb-14 sm:mb-16">
-          <h2 className="text-[#0B132A] font-bold text-2xl sm:text-3xl md:text-4xl tracking-tight leading-tight mb-3 sm:mb-4">
+        <div className="text-center mb-10 sm:mb-16">
+          <h2 className="text-[#0B132A] font-bold text-2xl sm:text-3xl md:text-4xl tracking-tight leading-tight mb-2 sm:mb-3">
             Trusted by Thousands of Happy Customers
           </h2>
-          <p className="text-[#596780] font-normal text-sm sm:text-base md:text-lg max-w-[540px] mx-auto leading-relaxed">
-            A high-performing web-based car rental system for any rent-a-car company and website
+          <p className="text-[#596780] font-normal text-xs sm:text-base md:text-lg max-w-[540px] mx-auto leading-relaxed">
+            Real stories from our valued customers
           </p>
         </div>
 
         {/* Testimonials Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
           {reviews.map((item, idx) => (
             <div
               key={item.id}
-              className={`bg-white rounded-[10px] p-6 sm:p-8 flex flex-col justify-between min-h-[240px] border transition-all duration-300 ${
+              className={`bg-white rounded-[10px] p-5 sm:p-7 lg:p-8 flex flex-col justify-between min-h-[160px] sm:min-h-[220px] lg:min-h-[240px] border transition-all duration-300 ${
                 currentIndex === idx
-                  ? "border-[#3563E9] shadow-[0px_10px_30px_rgba(53,99,233,0.12)] scale-[1.02]"
+                  ? "border-[#3563E9] shadow-[0px_10px_30px_rgba(53,99,233,0.12)] scale-[1.01] sm:scale-[1.02]"
                   : "border-slate-200/80 shadow-[0px_4px_20px_rgba(0,0,0,0.03)] hover:border-slate-300"
               }`}
             >
-              {/* Header: User Profile Photo & Rating */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-full overflow-hidden relative ring-2 ring-[#3563E9]/20 shrink-0">
+              {/* Header: User Profile Photo, Info & Rating */}
+              <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden relative ring-2 ring-[#3563E9]/20 shrink-0">
                     <Image
                       src={item.avatar}
                       alt={item.name}
@@ -83,7 +89,7 @@ export default function Testimonials() {
                     />
                   </div>
                   <div>
-                    <h3 className="font-bold text-[#0B132A] text-base sm:text-lg leading-snug">
+                    <h3 className="font-bold text-[#0B132A] text-sm sm:text-base lg:text-lg leading-snug">
                       {item.name}
                     </h3>
                     <span className="text-[#596780] text-xs sm:text-sm font-medium block">
@@ -93,14 +99,14 @@ export default function Testimonials() {
                 </div>
 
                 {/* Rating */}
-                <div className="flex items-center gap-1 text-sm sm:text-base font-bold text-[#0B132A]">
+                <div className="flex items-center gap-1 text-xs sm:text-sm lg:text-base font-bold text-[#0B132A] shrink-0">
                   <span>{item.rating}</span>
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 text-amber-400" />
                 </div>
               </div>
 
-              {/* Quote */}
-              <p className="text-[#0B132A] text-sm sm:text-base leading-[26px] sm:leading-[28px] font-normal">
+              {/* Comment */}
+              <p className="text-[#0B132A] text-xs sm:text-sm lg:text-base leading-relaxed sm:leading-[26px] lg:leading-[28px] font-normal">
                 {item.comment}
               </p>
             </div>
@@ -108,17 +114,17 @@ export default function Testimonials() {
         </div>
 
         {/* Pagination & Arrow Controls */}
-        <div className="flex items-center justify-between pt-4">
+        <div className="flex items-center justify-between pt-2 sm:pt-4">
           {/* Pagination Indicators */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5">
             {reviews.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
-                className={`h-[12px] rounded-full transition-all cursor-pointer ${
+                className={`h-2.5 sm:h-3 rounded-full transition-all cursor-pointer ${
                   currentIndex === idx
-                    ? "w-[40px] bg-[#3563E9]"
-                    : "w-[12px] bg-slate-200 hover:bg-slate-300"
+                    ? "w-8 sm:w-10 bg-[#3563E9]"
+                    : "w-2.5 sm:w-3 bg-slate-200 hover:bg-slate-300"
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
               />
@@ -126,20 +132,22 @@ export default function Testimonials() {
           </div>
 
           {/* Prev / Next Arrows */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <button
               onClick={handlePrev}
-              className="w-10 h-10 rounded-full border border-slate-300 hover:border-[#3563E9] hover:bg-[#3563E9] hover:text-white text-[#0B132A] flex items-center justify-center transition-all cursor-pointer active:scale-95"
+              type="button"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-slate-300 hover:border-[#3563E9] hover:bg-[#3563E9] hover:text-white text-[#0B132A] flex items-center justify-center transition-all cursor-pointer active:scale-95 shadow-2xs"
               aria-label="Previous review"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               onClick={handleNext}
-              className="w-10 h-10 rounded-full border border-slate-300 hover:border-[#3563E9] hover:bg-[#3563E9] hover:text-white text-[#0B132A] flex items-center justify-center transition-all cursor-pointer active:scale-95"
+              type="button"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-slate-300 hover:border-[#3563E9] hover:bg-[#3563E9] hover:text-white text-[#0B132A] flex items-center justify-center transition-all cursor-pointer active:scale-95 shadow-2xs"
               aria-label="Next review"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>

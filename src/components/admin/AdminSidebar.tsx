@@ -16,6 +16,7 @@ import {
   Layers,
   LayoutGrid,
   LayoutList,
+  LogOut,
   Monitor,
   Package,
   Percent,
@@ -33,7 +34,13 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  AuthUser,
+  getStoredAuthUser,
+  setStoredAuthUser,
+  supabase,
+} from "@/lib/supabase";
 
 interface AdminSidebarProps {
   isOpenMobile?: boolean;
@@ -101,19 +108,25 @@ const navGroups: NavGroup[] = [
   {
     group: "Sales",
     items: [
-      { label: "Sales", href: "#", icon: ShoppingCart, hasChevronRight: true },
-      { label: "Invoices", href: "#", icon: FileText },
+      { label: "Sales", href: "#", icon: ShoppingCart },
+      { label: "Invoices", href: "#", icon: Receipt },
       { label: "Sales Return", href: "#", icon: RotateCcw },
-      { label: "Quotation", href: "#", icon: Receipt },
-      { label: "POS", href: "#", icon: Monitor, hasChevronRight: true },
+      { label: "POS Orders", href: "#", icon: Monitor },
     ],
   },
   {
     group: "Promo",
     items: [
       { label: "Coupons", href: "#", icon: Ticket },
-      { label: "Gift Card", href: "#", icon: Gift },
-      { label: "Discount", href: "#", icon: Percent, hasChevronRight: true },
+      { label: "Gift Cards", href: "#", icon: Gift },
+      { label: "Discounts", href: "#", icon: Percent },
+    ],
+  },
+  {
+    group: "Reports",
+    items: [
+      { label: "Sales Report", href: "#", icon: FileText },
+      { label: "Customer Report", href: "#", icon: Award },
     ],
   },
 ];
@@ -126,12 +139,59 @@ export default function AdminSidebar({
 }: AdminSidebarProps) {
   const pathname = usePathname();
   const [internalIsCollapsed, setInternalIsCollapsed] = useState(false);
+  const [user, setUser] = useState<AuthUser | null>(null);
+
   const isCollapsed =
     externalIsCollapsed !== undefined
       ? externalIsCollapsed
       : internalIsCollapsed;
   const toggleCollapse =
     onToggleCollapse || (() => setInternalIsCollapsed(!internalIsCollapsed));
+
+  useEffect(() => {
+    const checkUser = () => {
+      const stored = getStoredAuthUser();
+      if (stored) {
+        setUser(stored);
+      } else {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session?.user) {
+            setUser({
+              id: session.user.id,
+              email: session.user.email || "",
+              full_name:
+                session.user.user_metadata?.full_name ||
+                session.user.email?.split("@")[0] ||
+                "Admin",
+              role:
+                session.user.email?.toLowerCase() === "admin@swiftride.com"
+                  ? "admin"
+                  : "user",
+            });
+          }
+        });
+      }
+    };
+
+    checkUser();
+
+    const onAuthChanged = () => checkUser();
+    window.addEventListener("swiftride-auth-changed", onAuthChanged);
+
+    return () => {
+      window.removeEventListener("swiftride-auth-changed", onAuthChanged);
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    setStoredAuthUser(null);
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  };
+
+  const displayName = user?.full_name || user?.email?.split("@")[0] || "Mike Witzel";
+  const displayEmail = user?.email || "admin@swiftride.com";
+  const userInitial = displayName.charAt(0).toUpperCase();
 
   return (
     <>
@@ -177,11 +237,11 @@ export default function AdminSidebar({
               </div>
             ) : (
               <Image
-                src="/admin-dashboard/dashboard_1.webp"
+                src="/color-logo.png"
                 alt="SwiftRide Logo"
-                width={130}
-                height={40}
-                className="h-9 w-auto object-contain transition-all"
+                width={160}
+                height={46}
+                className="h-10 sm:h-11 w-auto object-contain transition-all"
                 priority
               />
             )}
@@ -272,6 +332,43 @@ export default function AdminSidebar({
               )}
             </div>
           ))}
+        </div>
+
+        {/* Real User Profile Bottom Footer Bar */}
+        <div className="p-3 border-t border-slate-100 bg-slate-50/50 shrink-0">
+          {isCollapsed ? (
+            <div
+              className="w-8 h-8 mx-auto rounded-full bg-[#FA8231] text-white font-bold text-xs flex items-center justify-center shadow-2xs cursor-pointer"
+              title={`${displayName} (${displayEmail})`}
+              onClick={handleSignOut}
+            >
+              {userInitial}
+            </div>
+          ) : (
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-[#FA8231] text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs">
+                  {userInitial}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-[#0B132A] truncate leading-tight">
+                    {displayName}
+                  </p>
+                  <p className="text-[10px] text-slate-500 truncate">
+                    {displayEmail}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleSignOut}
+                type="button"
+                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-[5px] transition-colors cursor-pointer"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </aside>
     </>
